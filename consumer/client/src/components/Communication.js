@@ -2,6 +2,10 @@ import React from 'react';
 import { Client } from '@stomp/stompjs';
 import JSONPretty from 'react-json-pretty';
 
+const liStyle = {
+  textAlign: 'left'
+};
+
 class Communication extends React.Component {
   state = {
     serverTime: null,
@@ -73,7 +77,7 @@ class Communication extends React.Component {
                 <div>
                     Transactions:
                 </div>
-                <div>
+                <div style={liStyle}>
                     <ul>
                     {this.state.transactions.map((value, index) => {
                         return <li key={index}><JSONPretty id="json-pretty" data={value}></JSONPretty></li>

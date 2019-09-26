@@ -23,6 +23,6 @@ public class WorkforceChangeRequestData extends ChangeRequestData<WorkforceData>
                 request != null ? request.lastName : null,
                 id,
                 index,
-                getRequestId());
+                getWorkforceRequestId());
     }
 }

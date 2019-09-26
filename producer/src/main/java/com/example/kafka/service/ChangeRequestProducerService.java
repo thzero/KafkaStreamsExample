@@ -2,7 +2,6 @@ package com.example.kafka.service;
 
 import java.util.List;
 
-import com.example.kafka.response.ISuccessResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.response.ISuccessResponse;
 import com.example.kafka.response.UpdateProducerResponse;
 
 @Service
@@ -27,15 +27,17 @@ public class ChangeRequestProducerService implements IChangeRequestProducerServi
             int i = 0;
             for (WorkforceChangeRequestData changeRequest : changesRequests) {
                 try {
-                    logger.debug("index: '{}' | id: '{}' | data: {}", i, changeRequest.id, changeRequest.toString());
+                    // Use the workforce data id, not the id of the change request so that all requests for the same
+                    // workforce data id get allocated to the same partition
+                    logger.debug("index: '{}' | id: '{}' | data: {}", i, changeRequest.getWorkforceRequestId(), changeRequest.toString());
                     ISuccessResponse result = _mergeService.valid(changeRequest);
                     if (!result.isSuccess()) {
                         response.setResponse(result);
-                        logger.debug("\tindex: '{}' | id: '{}' | error: {}", i, changeRequest.id, response.getError().toString());
+                        logger.debug("\tindex: '{}' | id: '{}' | error: {}", i, changeRequest.getWorkforceRequestId(), response.getError().toString());
                         continue;
                     }
 
-                    _kafkaTemplate.send(_appConfig.changeRequestTopic, changeRequest.id, changeRequest);
+                    _kafkaTemplate.send(_appConfig.changeRequestTopic, changeRequest.getWorkforceRequestId(), changeRequest);
                     response.changesRequests.add(changeRequest);
                 }
                 catch (Exception ex) {

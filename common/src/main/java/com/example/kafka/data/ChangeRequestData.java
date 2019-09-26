@@ -28,7 +28,7 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
         this.splitType = splitType;
     }
 
-    public String getRequestId() {
+    public String getWorkforceRequestId() {
         return request != null ? request.id : null;
     }
 

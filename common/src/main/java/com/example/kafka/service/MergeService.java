@@ -3,8 +3,6 @@ package com.example.kafka.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.joda.time.DateTime;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +40,6 @@ public class MergeService extends BaseService implements IMergeService {
             }
 
             response = service.get().merge(workforce, changeRequest);
-            DateTime now = DateTime.now();
-            changeRequest.processedDate = now.toDate();
-            changeRequest.processedTimestamp = now.getMillis();
             return response;
         }
         catch (Exception ex) {

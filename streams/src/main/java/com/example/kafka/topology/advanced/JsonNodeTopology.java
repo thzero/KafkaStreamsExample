@@ -82,17 +82,17 @@
 //                (key, value) -> {
 //                    logger.debug("joinedStream received key '{}'", key);
 //                    logger.debug("joinedStream received value id '{}'", value.id);
-//                    logger.debug("joinedStream received value request id '{}'", value.getRequestId());
-//                    return value.getRequestId();
+//                    logger.debug("joinedStream received value request id '{}'", value.getWorkforceRequestId());
+//                    return value.getWorkforceRequestId();
 //                },
 //                (leftValue, rightValue) -> {
-//                    logger.debug("joinedStream joiner for request id '{}'", leftValue.getRequestId());
+//                    logger.debug("joinedStream joiner for request id '{}'", leftValue.getWorkforceRequestId());
 //                    if (rightValue == null) {
-//                        logger.warn("joinedStream workforce data for request id '{}' was not found!", leftValue.getRequestId());
+//                        logger.warn("joinedStream workforce data for request id '{}' was not found!", leftValue.getWorkforceRequestId());
 //                        return leftValue;
 //                    }
 //
-//                    logger.debug("joinedStream workforce data for request id '{}' was found!", leftValue.getRequestId());
+//                    logger.debug("joinedStream workforce data for request id '{}' was found!", leftValue.getWorkforceRequestId());
 //
 //                    // TODO: Merge into rightValue
 //                    leftValue.snapshot = rightValue;

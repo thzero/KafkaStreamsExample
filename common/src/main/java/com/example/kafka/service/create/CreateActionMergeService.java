@@ -1,5 +1,7 @@
 package com.example.kafka.service.create;
 
+import org.joda.time.DateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,9 @@ public class CreateActionMergeService extends BaseService implements IActionMerg
                 return error(response);
 
             changeRequest.snapshot = changeRequest.request;
+            DateTime now = DateTime.now();
+            changeRequest.snapshot.lastUpdatedDate = now.toDate();
+            changeRequest.snapshot.lastUpdatedTimestamp = now.getMillis();
             return success();
         }
         catch (Exception ex) {
