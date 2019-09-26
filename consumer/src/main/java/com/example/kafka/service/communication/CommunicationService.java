@@ -1,0 +1,70 @@
+package com.example.kafka.service.communication;
+
+import java.time.Instant;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import com.example.kafka.data.WorkforceChangeRequestData;
+
+@Service
+public class CommunicationService implements ICommunicationService {
+    private static final Logger logger = LoggerFactory.getLogger(CommunicationService.class);
+
+    public void greet(String greeting) {
+        logger.debug("Greeting for {}", greeting);
+
+        String text = "[" + Instant.now() + "]: " + greeting;
+        _messagingTemplate.convertAndSend("/topic/greetings", text);
+    }
+
+    public void transaction(String key, String value) {
+        logger.debug("Transaction for {}", value);
+        logger.debug("transaction received key {}: Payload: {}", key, value);
+
+        String output = "";
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(value);
+            ((ObjectNode)node).put("date", Instant.now().toString());
+            output = mapper.writeValueAsString(node);
+        }
+        catch (Exception ignored) {
+            output = value;
+        }
+
+        _messagingTemplate.convertAndSend("/topic/transactions", output);
+    }
+
+    public void transaction(String key, WorkforceChangeRequestData value) {
+        logger.debug("Transaction for {}", value);
+        logger.debug("transaction received key {}: Payload: {}", key, value);
+
+        String output = "";
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.convertValue(value, JsonNode.class);
+            ((ObjectNode)node).put("date", Instant.now().toString());
+            output = mapper.writeValueAsString(node);
+        }
+        catch (Exception ignored) { }
+
+        _messagingTemplate.convertAndSend("/topic/transactions", output);
+    }
+
+    @Autowired
+    private SimpMessagingTemplate _messagingTemplate;
+
+    // Not sure when to use one vs the other...?
+    @Autowired
+    private SimpMessageSendingOperations _messageOperations;
+}

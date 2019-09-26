@@ -1,0 +1,62 @@
+group = 'com.example.kafka'
+
+buildscript {
+	ext {
+		springBootVersion = "2.1.8.RELEASE"
+	}
+	repositories {
+		mavenLocal()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.apache.kafka:kafka-streams'
+	implementation 'org.springframework.kafka:spring-kafka'
+	compile project(':common')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+
+//plugins {
+//	id 'org.springframework.boot' version '2.1.8.RELEASE'
+//	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+//	id 'java'
+//}
+//
+//group = 'com.example.kafka'
+//version = '0.0.1-SNAPSHOT'
+//sourceCompatibility = '1.8'
+//
+//repositories {
+//	mavenCentral()
+//}
+//
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'org.springframework.kafka:spring-kafka'
+//	implementation 'org.ajbrown:name-machine:1.0.0'
+//	implementation project(':common')
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//	testImplementation 'org.springframework.kafka:spring-kafka-test'
+//}

@@ -1,0 +1,58 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    num:
+      stream:
+        threads: 1
+
+server:
+  port : 0
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %class{36}.%M - %msg%n"
+  level:
+    com.example.kafka: DEBUG
+
+applications:
+  advanced:
+    workforce:
+      id: advanced-workforce.v1.0.2
+    workforce-update:
+      id: advanced-workforce-update.v1.0.2
+  bad-message:
+    json-node-approach1:
+      id: json-node-bad-message-approach1.v1
+    workforce-approach1:
+      id: workforce-bad-message-approach1.v1
+    workforce-approach2:
+      id: workforce-bad-message-approach2.v1.01
+  simple:
+    id: simple-request.v1
+
+workforce:
+  tables:
+    workforce:
+      name: workforce
+  topics:
+    change-request:
+      name: workforce_change_request
+      aggregation:
+        window:
+          size:
+            secs: 60
+    change-request-dead-letter:
+      name: workforce_change_request_dead_letter
+    change-request-output:
+      name: workforce_change_request_output
+    change-request-transaction:
+      name: workforce_change_request_transaction
+    dead-letter:
+      name: workforce_dead_letter
+    load:
+      name: workforce_load
+    load-output:
+      name: workforce_load_output
+    output:
+      name: workforce_output
+  messages-per-request: 10

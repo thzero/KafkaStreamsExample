@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: tpd-loggers
+      auto-offset-reset: earliest
+      enableAutoCommit: false
+
+server:
+  port : 8081
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %class{36}.%M - %msg%n"
+  level:
+    com.example.kafka: DEBUG
+
+application:
+  change-request:
+    group-id: workforce_change_request
+
+workforce:
+  topics:
+    change-request-output:
+      name: workforce_change_request_output
+    change-request-transaction:
+      name: workforce_change_request_transaction
