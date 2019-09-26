@@ -18,7 +18,6 @@ public class WorkforceChangeRequestData extends ChangeRequestData<WorkforceData>
 
     @Override
     public String toString() {
-
         return String.format("WorkforceChangeRequest::toString() { firstName='{}', lastName='{}', type='{}', id='{}', index='{}', requestId='{}' }",
                 request != null ? request.firstName : null,
                 request != null ? request.lastName : null,

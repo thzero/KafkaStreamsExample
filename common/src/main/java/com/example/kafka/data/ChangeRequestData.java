@@ -1,5 +1,6 @@
 package com.example.kafka.data;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
@@ -42,5 +43,7 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
     public ChangeSubTypes changeSubTypeCd; // what allowed data type update?
     public ChangeTypes changeTypeCd; // add? delete? update?
     public int index;
+    public Date processedDate;
+    public long processedTimestamp;
     public SplitTypes splitType;
 }

@@ -1,9 +1,5 @@
 package com.example.kafka.topology.advanced;
 
-import com.example.kafka.data.WorkforceChangeRequestData;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 
@@ -14,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceBaseTopology;
 

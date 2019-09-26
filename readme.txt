@@ -38,5 +38,8 @@ https://supergloo.com/kafka-streams/kafka-streams-joins-examples/
 https://www.confluent.io/blog/put-several-event-types-kafka-topic/
 https://stackoverflow.com/questions/51860481/is-there-a-way-to-send-data-to-a-kafka-topic-directly-from-within-processor
 
+https://www.confluent.jp/blog/predicting-flight-arrivals-with-the-apache-kafka-streams-api/
+https://github.com/confluentinc/online-inferencing-blog-application
+
 https://blog.newrelic.com/engineering/effective-strategies-kafka-topic-partitioning/
 https://medium.com/@andy.bryant/kafka-streams-work-allocation-4f31c24753cc

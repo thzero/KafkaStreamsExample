@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c649a9c5-368f-401e-b1f3-856f058d7cc5" name="Default Changelist" comment="" />
+    <list default="true" id="c649a9c5-368f-401e-b1f3-856f058d7cc5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../common/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../common/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/ChangeRequestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/ChangeRequestData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/WorkforceChangeRequestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/WorkforceChangeRequestData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/WorkforceData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/data/WorkforceData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/service/MergeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/service/MergeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/service/update/UpdateActionMergeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../common/src/main/java/com/example/kafka/service/update/UpdateActionMergeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.6.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.6.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../producer/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../producer/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../readme.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../streams/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../streams/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../streams/src/main/java/com/example/kafka/topology/advanced/UpdateWorkforceTopology.java" beforeDir="false" afterPath="$PROJECT_DIR$/../streams/src/main/java/com/example/kafka/topology/advanced/UpdateWorkforceTopology.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../streams/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../streams/src/main/resources/application.yml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

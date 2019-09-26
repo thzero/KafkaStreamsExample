@@ -1,6 +1,7 @@
 package com.example.kafka.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -20,6 +21,8 @@ public class WorkforceData extends IdData {
     public String firstName;
     @NonNull @NotBlank
     public String lastName;
+    public Date lastUpdatedDate;
+    public long lastUpdatedTimestamp;
     public String networkDomain;
     public String networkId;
     public StatusType status = StatusType.Active;

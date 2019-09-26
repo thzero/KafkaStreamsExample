@@ -3,6 +3,8 @@ package com.example.kafka.service.update;
 import java.util.List;
 import java.util.Optional;
 
+import org.joda.time.DateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,9 @@ public class UpdateActionMergeService extends BaseService implements IActionMerg
 
             service.get().update(workforce, changeRequest);
             changeRequest.snapshot = workforce;
+            DateTime now = DateTime.now();
+            changeRequest.snapshot.lastUpdatedDate = now.toDate();
+            changeRequest.snapshot.lastUpdatedTimestamp = now.getMillis();
             return success();
         }
         catch (Exception ex) {

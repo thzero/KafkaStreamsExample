@@ -17,9 +17,9 @@ logging:
 applications:
   advanced:
     workforce:
-      id: advanced-workforce.v1.0.2
+      id: advanced-workforce.v1.0.3
     workforce-update:
-      id: advanced-workforce-update.v1.0.2
+      id: advanced-workforce-update.v1.0.3
   bad-message:
     json-node-approach1:
       id: json-node-bad-message-approach1.v1
