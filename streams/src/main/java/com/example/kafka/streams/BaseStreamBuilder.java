@@ -1,8 +1,9 @@
 package com.example.kafka.streams;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.Topology;

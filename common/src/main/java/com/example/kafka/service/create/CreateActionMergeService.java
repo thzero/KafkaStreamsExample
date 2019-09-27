@@ -1,6 +1,6 @@
 package com.example.kafka.service.create;
 
-import org.joda.time.DateTime;
+import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import com.example.kafka.DateUtils;
 import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
+import com.example.kafka.response.MergeResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IActionMergeService;
 
@@ -25,23 +27,25 @@ public class CreateActionMergeService extends BaseService implements IActionMerg
     }
 
     @Override
-    public ISuccessResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+    public MergeResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+        MergeResponse response = new MergeResponse();
         try {
-            ISuccessResponse response = valid(changeRequest);
-            if (!response.isSuccess())
-                return error(response);
+            ISuccessResponse validResponse = valid(changeRequest);
+            if (!validResponse.isSuccess())
+                return error(response, validResponse);
 
             changeRequest.snapshot = changeRequest.request;
-            DateTime now = DateTime.now();
-            changeRequest.snapshot.lastUpdatedDate = now.toDate();
-            changeRequest.snapshot.lastUpdatedTimestamp = now.getMillis();
-            return success();
+            Instant instant = Instant.now();
+            changeRequest.snapshot.lastUpdatedDate = DateUtils.toDate(instant);
+            changeRequest.snapshot.lastUpdatedTimestamp = DateUtils.toEpochSeconds(instant);
+            response.changeRequest = changeRequest;
+            return response;
         }
         catch (Exception ex) {
             logger.error(TAG, ex);
         }
 
-        return error();
+        return error(response);
     }
 
     @Override

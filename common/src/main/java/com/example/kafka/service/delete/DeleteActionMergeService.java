@@ -14,9 +14,10 @@ import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
+import com.example.kafka.response.MergeResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IActionMergeService;
-import com.example.kafka.service.IDeleteActionMergeService;
+import com.example.kafka.service.IDeleteSubActionMergeService;
 
 @Service
 public class DeleteActionMergeService extends BaseService implements IActionMergeService {
@@ -28,27 +29,29 @@ public class DeleteActionMergeService extends BaseService implements IActionMerg
     }
 
     @Override
-    public ISuccessResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+    public MergeResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+        MergeResponse response = new MergeResponse();
         try {
-            ISuccessResponse response = valid(changeRequest);
-            if (!response.isSuccess())
-                return error(response);
+            ISuccessResponse validResponse = valid(changeRequest);
+            if (!validResponse.isSuccess())
+                return error(response, validResponse);
 
-            Optional<IDeleteActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
+            Optional<IDeleteSubActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
             if (!service.isPresent()) {
                 logger.error(String.format("Invalid service for changeType '%s', changeSubTypeCd '%s'.", changeRequest.changeTypeCd.toString(), changeRequest.changeSubTypeCd.toString()));
-                return error();
+                return error(response);
             }
 
             service.get().delete(workforce, changeRequest);
             changeRequest.snapshot = workforce;
-            return success();
+            response.changeRequest = changeRequest;
+            return response;
         }
         catch (Exception ex) {
             logger.error(TAG, ex);
         }
 
-        return error();
+        return error(response);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class DeleteActionMergeService extends BaseService implements IActionMerg
             if (changeRequest.request == null)
                 return error("Invalid 'request' element.");
 
-            Optional<IDeleteActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
+            Optional<IDeleteSubActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
             if (!service.isPresent()) {
                 logger.error(String.format("Invalid service for changeType '%s', changeSubTypeCd '%s'.", changeRequest.changeTypeCd.toString(), changeRequest.changeSubTypeCd.toString()));
                 return error();
@@ -73,7 +76,7 @@ public class DeleteActionMergeService extends BaseService implements IActionMerg
     }
 
     @Autowired
-    private List<IDeleteActionMergeService> _services;
+    private List<IDeleteSubActionMergeService> _services;
 
     private static final String TAG = DeleteActionMergeService.class.getName();
 }

@@ -3,9 +3,9 @@
     {
       "changeSubTypeCd": "Company",
       "changeTypeCd": "Update",
-      "initial": {
+      "request": {
         "company": "THIS WAS CHANGED",
-        "id": "aee35537-655f-47c8-90eb-1b5e33e1f933"
+        "id": "708c7845-44f7-4ca1-8a41-105c8451ea64"
       }
     }
   ]

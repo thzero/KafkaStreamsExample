@@ -1,9 +1,8 @@
 package com.example.kafka.service.update;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-
-import org.joda.time.DateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +12,15 @@ import org.springframework.lang.NonNull;
 
 import org.springframework.stereotype.Service;
 
+import com.example.kafka.DateUtils;
 import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
+import com.example.kafka.response.MergeResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IActionMergeService;
-import com.example.kafka.service.IUpdateActionMergeService;
+import com.example.kafka.service.IUpdateSubActionMergeService;
 
 @Service
 public class UpdateActionMergeService extends BaseService implements IActionMergeService {
@@ -31,33 +32,35 @@ public class UpdateActionMergeService extends BaseService implements IActionMerg
     }
 
     @Override
-    public ISuccessResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+    public MergeResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest) {
+        MergeResponse response = new MergeResponse();
         try {
-            ISuccessResponse response = valid(changeRequest);
-            if (!response.isSuccess())
-                return error(response);
+            ISuccessResponse validResponse = valid(changeRequest);
+            if (!validResponse.isSuccess())
+                return error(response, validResponse);
 
             if (workforce == null)
-                return error("Invalid workforce object.");
+                return error(response, "Invalid workforce object.");
 
-            Optional<IUpdateActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
+            Optional<IUpdateSubActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
             if (!service.isPresent()) {
                 logger.error(String.format("Invalid service for changeType '%s', changeSubTypeCd '%s'.", changeRequest.changeTypeCd.toString(), changeRequest.changeSubTypeCd.toString()));
-                return error();
+                return error(response);
             }
 
             service.get().update(workforce, changeRequest);
             changeRequest.snapshot = workforce;
-            DateTime now = DateTime.now();
-            changeRequest.snapshot.lastUpdatedDate = now.toDate();
-            changeRequest.snapshot.lastUpdatedTimestamp = now.getMillis();
-            return success();
+            Instant instant = Instant.now();
+            changeRequest.snapshot.lastUpdatedDate = DateUtils.toDate(instant);
+            changeRequest.snapshot.lastUpdatedTimestamp = DateUtils.toEpochSeconds(instant);
+            response.changeRequest = changeRequest;
+            return response;
         }
         catch (Exception ex) {
             logger.error(TAG, ex);
         }
 
-        return error();
+        return error(response);
     }
 
     @Override
@@ -66,7 +69,7 @@ public class UpdateActionMergeService extends BaseService implements IActionMerg
             if (changeRequest.request == null)
                 return error("Invalid 'request' element.");
 
-            Optional<IUpdateActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
+            Optional<IUpdateSubActionMergeService> service = _services.stream().filter(l -> l.getChangeSubTypeCd() == changeRequest.changeSubTypeCd).findFirst();
             if (!service.isPresent()) {
                 logger.error(String.format("Invalid service for changeType '%s', changeSubTypeCd '%s'.", changeRequest.changeTypeCd.toString(), changeRequest.changeSubTypeCd.toString()));
                 return error();
@@ -82,7 +85,7 @@ public class UpdateActionMergeService extends BaseService implements IActionMerg
     }
 
     @Autowired
-    private List<IUpdateActionMergeService> _services;
+    private List<IUpdateSubActionMergeService> _services;
 
     private static final String TAG = UpdateActionMergeService.class.getName();
 }

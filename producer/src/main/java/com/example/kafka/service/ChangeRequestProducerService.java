@@ -1,5 +1,6 @@
 package com.example.kafka.service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.kafka.DateUtils;
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.response.ISuccessResponse;
@@ -37,6 +39,9 @@ public class ChangeRequestProducerService implements IChangeRequestProducerServi
                         continue;
                     }
 
+                    Instant instant = Instant.now();
+                    changeRequest.requestedDate = DateUtils.toDate(instant);
+                    changeRequest.requestedTimestamp = DateUtils.toEpochSeconds(instant);
                     _kafkaTemplate.send(_appConfig.changeRequestTopic, changeRequest.getWorkforceRequestId(), changeRequest);
                     response.changesRequests.add(changeRequest);
                 }

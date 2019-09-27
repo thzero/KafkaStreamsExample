@@ -45,5 +45,7 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
     public int index;
     public Date processedDate;
     public long processedTimestamp;
+    public Date requestedDate;
+    public long requestedTimestamp;
     public SplitTypes splitType;
 }

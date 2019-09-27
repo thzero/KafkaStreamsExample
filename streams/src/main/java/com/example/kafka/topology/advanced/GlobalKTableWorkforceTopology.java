@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.example.kafka.data.SplitTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
-import com.example.kafka.response.ISuccessResponse;
+import com.example.kafka.response.MergeResponse;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceBaseTopology;
 
@@ -72,19 +72,15 @@ public class GlobalKTableWorkforceTopology extends WorkforceBaseTopology {
                         logger.warn("joinedStream - workforce data for request id '{}' was not found!", leftValue.getWorkforceRequestId());
 
                     logger.debug("joinedStream - before, key: '{}' | leftValue: {} | rightValue: {}", leftValue.getWorkforceRequestId(), leftValue.toString(), (rightValue != null ? rightValue.toString() : null));
-                    ISuccessResponse response = _mergeService.merge(leftValue, rightValue);
+                    MergeResponse response = _mergeService.merge(leftValue, rightValue);
                     if (!response.isSuccess()) {
                         // TODO: Handle error?
                         logger.warn("joinedStream - workforce data for request id '{}' had the following error: {}", leftValue.getWorkforceRequestId(), response.getError());
                         return leftValue;
                     }
-                    logger.debug("joinedStream - after, key: '{}' | leftValue: {}", leftValue.getWorkforceRequestId(), leftValue.toString());
+                    logger.debug("joinedStream - after, key: '{}' | leftValue: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
 
-                    DateTime now = DateTime.now();
-                    leftValue.processedDate = now.toDate();
-                    leftValue.processedTimestamp = now.getMillis();
-
-                    return leftValue;
+                    return response.changeRequest;
                 });
 
         // Splitting the stream - send one record to the output topic, and another to the the transaction topic.

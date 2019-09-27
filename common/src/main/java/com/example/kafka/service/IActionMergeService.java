@@ -6,9 +6,10 @@ import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
+import com.example.kafka.response.MergeResponse;
 
 public interface IActionMergeService {
     ChangeTypes getChangeTypeCd();
-    ISuccessResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest);
+    MergeResponse merge(WorkforceData workforce, @NonNull WorkforceChangeRequestData changeRequest);
     ISuccessResponse valid(@NonNull WorkforceChangeRequestData changeRequest);
 }

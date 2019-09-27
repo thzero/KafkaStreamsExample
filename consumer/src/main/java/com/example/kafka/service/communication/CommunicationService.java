@@ -1,7 +1,9 @@
 package com.example.kafka.service.communication;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
+import com.example.kafka.DateUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -35,7 +37,9 @@ public class CommunicationService implements ICommunicationService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(value);
-            ((ObjectNode)node).put("date", Instant.now().toString());
+            Instant instant = Instant.now();
+            ((ObjectNode)node).put("deliveredDate", DateTimeFormatter.ISO_INSTANT.format(instant));
+            ((ObjectNode)node).put("deliveredTimestamp", DateUtils.toEpochSeconds(instant));
             output = mapper.writeValueAsString(node);
         }
         catch (Exception ignored) {
@@ -53,7 +57,9 @@ public class CommunicationService implements ICommunicationService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.convertValue(value, JsonNode.class);
-            ((ObjectNode)node).put("date", Instant.now().toString());
+            Instant instant = Instant.now();
+            ((ObjectNode)node).put("deliveredDate", DateTimeFormatter.ISO_INSTANT.format(instant));
+            ((ObjectNode)node).put("deliveredTimestamp", DateUtils.toEpochSeconds(instant));
             output = mapper.writeValueAsString(node);
         }
         catch (Exception ignored) { }

@@ -1,8 +1,11 @@
 package com.example.kafka.service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.kafka.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,38 +18,41 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
-import com.example.kafka.response.SuccessResponse;
+import com.example.kafka.response.MergeResponse;
 
 @Service
 public class MergeService extends BaseService implements IMergeService {
     private static final Logger logger = LoggerFactory.getLogger(MergeService.class);
 
-    public ISuccessResponse merge(@NonNull JsonNode changeRequest, @NonNull JsonNode workforce) {
+    public MergeResponse merge(@NonNull JsonNode changeRequest, @NonNull JsonNode workforce) {
         // TODO
-        return new SuccessResponse();
+        return new MergeResponse();
     }
 
-    public ISuccessResponse merge(@NonNull WorkforceChangeRequestData changeRequest, WorkforceData workforce) {
+    public MergeResponse merge(@NonNull WorkforceChangeRequestData changeRequest, WorkforceData workforce) {
+        MergeResponse response = new MergeResponse();
         try {
-            ISuccessResponse response = valid(changeRequest);
-            if (!response.isSuccess()) {
+            ISuccessResponse responseValid = valid(changeRequest);
+            if (!responseValid.isSuccess())
                 return error(response);
-            }
 
             Optional<IActionMergeService> service = _services.stream().filter(l -> l.getChangeTypeCd() == changeRequest.changeTypeCd).findFirst();
             if (!service.isPresent()) {
                 logger.error(String.format("Invalid service for changeTypeCd '%s'.", changeRequest.changeTypeCd.toString()));
-                return error();
+                return error(response);
             }
 
             response = service.get().merge(workforce, changeRequest);
+            Instant instant = Instant.now();
+            response.changeRequest.processedDate = DateUtils.toDate(instant);
+            response.changeRequest.processedTimestamp = DateUtils.toEpochSeconds(instant);
             return response;
         }
         catch (Exception ex) {
             logger.error(TAG, ex);
         }
 
-        return error();
+        return error(response);
     }
 
     public ISuccessResponse valid(@NonNull WorkforceChangeRequestData changeRequest) {

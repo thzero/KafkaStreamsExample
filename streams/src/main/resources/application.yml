@@ -17,11 +17,11 @@ logging:
 applications:
   advanced:
     workforce-globalktable:
-      id: advanced-workforce-globalktable.v1.0.1
+      id: advanced-workforce-globalktable.v1.0.2
     workforce-ktable:
-      id: advanced-workforce.v1.0.1
+      id: advanced-workforce.v1.0.2
     workforce-update:
-      id: advanced-workforce-update.v1.0.1
+      id: advanced-workforce-update.v1.0.2
   bad-message:
     json-node-approach1:
       id: json-node-bad-message-approach1.v1

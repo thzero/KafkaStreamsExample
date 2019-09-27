@@ -1,5 +1,7 @@
 package com.example.kafka.response;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.lang.NonNull;
 
 public class SuccessResponse implements ISuccessResponse {
@@ -13,6 +15,11 @@ public class SuccessResponse implements ISuccessResponse {
     }
 
     public boolean isSuccess() { return _success; }
+
+    public void setError(@NonNull @NotBlank String message) {
+        this.error = new Error(message);
+        _success = false;
+    }
 
     public void setError(@NonNull Error error) {
         this.error = error != null ? error : new Error();
