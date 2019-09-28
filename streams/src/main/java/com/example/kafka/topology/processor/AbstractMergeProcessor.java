@@ -1,31 +1,27 @@
 package com.example.kafka.topology.processor;
 
-import java.util.Objects;
-
-import javax.validation.constraints.NotBlank;
-
-import org.apache.kafka.streams.processor.AbstractProcessor;
-import org.apache.kafka.streams.processor.ProcessorContext;
-import org.apache.kafka.streams.processor.To;
-import org.apache.kafka.streams.state.KeyValueStore;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
-
 import com.example.kafka.data.ChangeRequestData;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.MergeResponse;
 import com.example.kafka.service.IMergeService;
+import org.apache.kafka.streams.processor.AbstractProcessor;
+import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.To;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 
-public class GloablStoreMergeProcessor extends AbstractProcessor<String, WorkforceChangeRequestData> {
-    private static final Logger logger = LoggerFactory.getLogger(GloablStoreMergeProcessor.class);
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
-    public GloablStoreMergeProcessor() {}
-    public GloablStoreMergeProcessor(@NonNull @NotBlank String storeName, @NonNull IMergeService mergeService) {
+public abstract class AbstractMergeProcessor extends AbstractProcessor<String, WorkforceChangeRequestData> {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMergeProcessor.class);
+
+    public AbstractMergeProcessor() {}
+    public AbstractMergeProcessor(@NonNull @NotBlank String storeName, @NonNull IMergeService mergeService) {
         _storeName = storeName;
         _mergeService = mergeService;
     }
@@ -69,7 +65,7 @@ public class GloablStoreMergeProcessor extends AbstractProcessor<String, Workfor
 
             logger.debug("joinedStream - after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
 
-            store(key, response.changeRequest.snapshot);
+            storeMergeResults(key, response.changeRequest.snapshot);
 
             // Write the transaction to the transaction sink
             changeRequest.status = ChangeRequestData.Status.Success;
@@ -83,10 +79,7 @@ public class GloablStoreMergeProcessor extends AbstractProcessor<String, Workfor
         }
     }
 
-    protected void store(@NonNull @NotBlank String key, @NonNull WorkforceData workforce) {
-        // Write the snapshot to the output sink
-        context().forward(key, workforce, To.child(KeySinkWorkforce));
-    }
+    protected abstract void storeMergeResults(@NonNull @NotBlank String key, @NonNull WorkforceData workforce);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -105,5 +98,5 @@ public class GloablStoreMergeProcessor extends AbstractProcessor<String, Workfor
     public static final String KeySinkWorkforceDeadLetter = "workforce-dead-letter";
     public static final String KeySinkWorkforceTransaction = "workforce-transaction-out";
 
-    public static final String TAG = GloablStoreMergeProcessor.class.getName();
+    public static final String TAG = AbstractMergeProcessor.class.getName();
 }

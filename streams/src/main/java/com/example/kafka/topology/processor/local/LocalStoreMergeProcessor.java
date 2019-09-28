@@ -1,4 +1,4 @@
-package com.example.kafka.topology.processor;
+package com.example.kafka.topology.processor.local;
 
 import javax.validation.constraints.NotBlank;
 
@@ -9,8 +9,9 @@ import org.springframework.lang.NonNull;
 
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
+import com.example.kafka.topology.processor.AbstractMergeProcessor;
 
-public class LocalStoreMergeProcessor extends GloablStoreMergeProcessor {
+public class LocalStoreMergeProcessor extends AbstractMergeProcessor {
     private static final Logger logger = LoggerFactory.getLogger(LocalStoreMergeProcessor.class);
 
     public LocalStoreMergeProcessor() {}
@@ -18,7 +19,8 @@ public class LocalStoreMergeProcessor extends GloablStoreMergeProcessor {
         super(storeName, mergeService);
     }
 
-    protected void store(@NonNull @NotBlank String key, @NonNull WorkforceData workforce) {
+    @Override
+    protected void storeMergeResults(@NotBlank String key, WorkforceData workforce) {
         // Set the data back into the store
         _workforceStore.put(key, workforce);
     }

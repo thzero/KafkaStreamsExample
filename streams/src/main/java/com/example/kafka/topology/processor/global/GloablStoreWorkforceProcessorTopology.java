@@ -1,4 +1,4 @@
-package com.example.kafka.topology.processor;
+package com.example.kafka.topology.processor.global;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,15 +25,6 @@ public class GloablStoreWorkforceProcessorTopology extends WorkforceProcessorTop
 
     @Override
     protected void defineTopology(@NonNull Topology builder) {
-        Map<String, String> changelogConfig = new HashMap<>();
-        // override min.insync.replicas
-        changelogConfig.put("min.insync.replicas", "1");
-
-//        StoreBuilder<KeyValueStore<String, WorkforceData>> workforceStoreBuilder = Stores.keyValueStoreBuilder(
-//                Stores.persistentKeyValueStore(KeyStore),
-//                stringSerde,
-//                workforceSerde)
-//                .withLoggingEnabled(changelogConfig);
         StoreBuilder<KeyValueStore<String, WorkforceData>> workforceStoreBuilder = Stores.keyValueStoreBuilder(
                 Stores.persistentKeyValueStore(KeyStore),
                 stringSerde,
@@ -44,9 +35,7 @@ public class GloablStoreWorkforceProcessorTopology extends WorkforceProcessorTop
                 .addGlobalStore(workforceStoreBuilder, KeySourceLoad, stringSerde.deserializer(), workforceSerde.deserializer(), appConfig.loadTopic, GlobalStoreWorkforceProcessor.TAG, () -> new GlobalStoreWorkforceProcessor(KeyStore))
                 .addSource(KeySourceChangeRequestInput, stringSerde.deserializer(), workforceChangeRequestSerde.deserializer(), appConfig.changeRequestTopic)
 
-//                .addProcessor(MergeProcessor.TAG, MergeProcessor::new, KeyChangeRequestInput)
                 .addProcessor(GloablStoreMergeProcessor.TAG, () -> new GloablStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
-//                .addStateStore(workforceStore, MergeProcessor.TAG)
 
                 .addSink(GloablStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GloablStoreMergeProcessor.TAG)
                 .addSink(GloablStoreMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GloablStoreMergeProcessor.TAG)

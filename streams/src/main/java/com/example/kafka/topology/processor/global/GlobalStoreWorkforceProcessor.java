@@ -1,4 +1,4 @@
-package com.example.kafka.topology.processor;
+package com.example.kafka.topology.processor.global;
 
 import java.util.Objects;
 
