@@ -27,10 +27,14 @@ public abstract class WorkforceBaseTopology implements ITopology {
         workforceSerde = SerdeUtils.generateWorkforce();
         workforceChangeRequestSerde = SerdeUtils.generateWorkforceChangeRequest();
 
-        return buildTopology();
+        StreamsBuilder builder = new StreamsBuilder();
+
+        defineTopology(builder);
+
+        return builder.build();
     }
 
-    protected abstract Topology buildTopology();
+    protected abstract void defineTopology(@NonNull StreamsBuilder builder);
 
     protected Deserializer<JsonNode> jsonDeserializer = new JsonDeserializer();
     protected Serializer<JsonNode> jsonSerializer = new JsonSerializer();
@@ -38,6 +42,7 @@ public abstract class WorkforceBaseTopology implements ITopology {
     protected Serde<String> stringSerde;
     protected Serde<WorkforceData> workforceSerde;
     protected Serde<WorkforceChangeRequestData> workforceChangeRequestSerde;
+
 
     @Autowired
     protected AppConfig appConfig;
