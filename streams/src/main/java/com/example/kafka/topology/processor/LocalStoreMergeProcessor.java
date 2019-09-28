@@ -10,11 +10,11 @@ import org.springframework.lang.NonNull;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
 
-public class MergeProcessorWithLocalStore extends GloablStoreMergeProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(MergeProcessorWithLocalStore.class);
+public class LocalStoreMergeProcessor extends GloablStoreMergeProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(LocalStoreMergeProcessor.class);
 
-    public MergeProcessorWithLocalStore() {}
-    public MergeProcessorWithLocalStore(@NonNull @NotBlank String storeName, @NonNull IMergeService mergeService) {
+    public LocalStoreMergeProcessor() {}
+    public LocalStoreMergeProcessor(@NonNull @NotBlank String storeName, @NonNull IMergeService mergeService) {
         super(storeName, mergeService);
     }
 
@@ -23,5 +23,5 @@ public class MergeProcessorWithLocalStore extends GloablStoreMergeProcessor {
         _workforceStore.put(key, workforce);
     }
 
-    public static final String TAG = MergeProcessorWithLocalStore.class.getName();
+    public static final String TAG = LocalStoreMergeProcessor.class.getName();
 }

@@ -1,4 +1,4 @@
-package com.example.kafka.config.advanced;
+package com.example.kafka.config.processor;
 
 import java.util.Properties;
 
@@ -31,6 +31,6 @@ public class ProcessorWorkforceConfigRetriever extends BaseConfigRetriever {
     @Override
     protected String getAppId() { return _appId; }
 
-    @Value("${applications.advanced.workforce-processor.id}")
+    @Value("${applications.processor.workforce.id}")
     private String _appId;
 }

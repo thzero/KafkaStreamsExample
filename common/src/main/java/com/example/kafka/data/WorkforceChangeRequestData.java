@@ -14,8 +14,8 @@ public class WorkforceChangeRequestData extends ChangeRequestData<WorkforceData>
         super(id, change, splitType);
         this.request = change.request;
         this.snapshot = change.snapshot;
-        this.processedDate = change.processedDate;
-        this.processedTimestamp = change.processedTimestamp;
+        this.processDate = change.processDate;
+        this.processTimestamp = change.processTimestamp;
         this.requestedDate = change.requestedDate;
         this.requestedTimestamp = change.requestedTimestamp;
     }

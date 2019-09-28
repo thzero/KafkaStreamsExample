@@ -10,6 +10,6 @@ public class DateUtils {
         return Date.from(instant);
     }
     public static long toEpochSeconds(@NonNull Instant instant) {
-        return instant.getEpochSecond();
+        return instant.toEpochMilli();
     }
 }

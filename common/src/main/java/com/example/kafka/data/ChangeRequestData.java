@@ -43,9 +43,27 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
     public ChangeSubTypes changeSubTypeCd; // what allowed data type update?
     public ChangeTypes changeTypeCd; // add? delete? update?
     public int index;
-    public Date processedDate;
-    public long processedTimestamp;
+    public Date processDate;
+    public ProcessStatus processStep = ProcessStatus.Initial;
+    public long processTimestamp;
     public Date requestedDate;
     public long requestedTimestamp;
+    public Status status = Status.Initial;
     public SplitTypes splitType;
+
+    public enum ProcessStatus {
+        Initial,
+        Failed,
+        Join,
+        Merge,
+        Split,
+        Success
+    }
+
+    public enum Status {
+        Initial,
+        Failed,
+        NotFound,
+        Success
+    }
 }

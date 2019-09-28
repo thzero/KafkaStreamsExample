@@ -13,6 +13,8 @@ workforce:
   topics:
     change-request:
       name: workforce_change_request
+    change-request-checkpoint:
+      name: workforce_change_request_checkpoint
     change-request-dead-letter:
       name: workforce_change_request_dead_letter
     change-request-output:

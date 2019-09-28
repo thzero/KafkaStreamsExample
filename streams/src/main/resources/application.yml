@@ -29,6 +29,9 @@ applications:
       id: workforce-bad-message-approach1.v1
     workforce-approach2:
       id: workforce-bad-message-approach2.v1.01
+  processor:
+    workforce:
+      id: processor-workforce.v1.0.1
   simple:
     id: simple-request.v1
 
@@ -39,10 +42,8 @@ workforce:
   topics:
     change-request:
       name: workforce_change_request
-      aggregation:
-        window:
-          size:
-            secs: 60
+    change-request-checkpoint:
+      name: workforce_change_request_checkpoint
     change-request-dead-letter:
       name: workforce_change_request_dead_letter
     change-request-output:

@@ -48,6 +48,11 @@ public class DemoApplication {
 	}
 
 	@Bean
+	public NewTopic changeRequestCheckpointTopic() {
+		return new NewTopic(_topicNameConfig.changeRequestCheckpointTopic, 3, (short) 1);
+	}
+
+	@Bean
 	public NewTopic changeDeadLetterTopic() {
 		return new NewTopic(_topicNameConfig.changeRequestDeadLetterTopic, 3, (short) 1);
 	}

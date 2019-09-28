@@ -11,7 +11,7 @@ import com.example.kafka.config.IKafkaConfigRetriever;
 import com.example.kafka.streams.BaseStreamBuilder;
 import com.example.kafka.topology.ITopology;
 
-@Component
+//@Component
 public class KTableWorkforceStreamBuilder extends BaseStreamBuilder {
     private final Logger logger = LoggerFactory.getLogger(KTableWorkforceStreamBuilder.class);
 

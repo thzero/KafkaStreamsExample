@@ -11,24 +11,18 @@ import org.slf4j.LoggerFactory;
 
 import com.example.kafka.data.WorkforceData;
 
-public class WorkforceStoreProcessor extends AbstractProcessor<String, WorkforceData> {
-    private static final Logger logger = LoggerFactory.getLogger(WorkforceStoreProcessor.class);
+public class GlobalStoreWorkforceProcessor extends AbstractProcessor<String, WorkforceData> {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalStoreWorkforceProcessor.class);
 
-    public WorkforceStoreProcessor() {}
-    public WorkforceStoreProcessor(String storeName) {
+    public GlobalStoreWorkforceProcessor() {}
+    public GlobalStoreWorkforceProcessor(String storeName) {
         _storeName = storeName;
     }
 
     @Override
     public void process(String key, WorkforceData workforce) {
-        try {
-            logger.debug("joinedStream - load for request id '{}'", workforce.id);
-            _workforceStore.put(workforce.id, workforce);
-        }
-        catch (Exception ex) {
-            logger.debug(TAG, ex);
-        }
-        context().commit();
+        logger.debug("joinedStream - load for request id '{}'", workforce.id);
+        _workforceStore.put(workforce.id, workforce);
     }
 
     @Override
@@ -41,5 +35,5 @@ public class WorkforceStoreProcessor extends AbstractProcessor<String, Workforce
     private String _storeName;
     private KeyValueStore<String, WorkforceData> _workforceStore;
 
-    public static final String TAG = WorkforceStoreProcessor.class.getName();
+    public static final String TAG = GlobalStoreWorkforceProcessor.class.getName();
 }

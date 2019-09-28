@@ -7,6 +7,4 @@ import org.springframework.stereotype.Component;
 public class AppConfig extends BaseConfig {
     @Value("${workforce.tables.workforce.name}")
     public String workforceTable;
-    @Value("${workforce.topics.change-request.aggregation.window.size.secs}")
-    public Integer changeRequestWindowsSizeSeconds;
 }

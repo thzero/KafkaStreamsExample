@@ -1,7 +1,6 @@
 package com.example.kafka.service;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +43,8 @@ public class MergeService extends BaseService implements IMergeService {
 
             response = service.get().merge(workforce, changeRequest);
             Instant instant = Instant.now();
-            response.changeRequest.processedDate = DateUtils.toDate(instant);
-            response.changeRequest.processedTimestamp = DateUtils.toEpochSeconds(instant);
+            response.changeRequest.processDate = DateUtils.toDate(instant);
+            response.changeRequest.processTimestamp = DateUtils.toEpochSeconds(instant);
             return response;
         }
         catch (Exception ex) {
