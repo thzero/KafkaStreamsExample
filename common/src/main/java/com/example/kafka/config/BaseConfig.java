@@ -13,6 +13,8 @@ public abstract class BaseConfig {
     public String changeRequestOutputTopic;
     @Value("${workforce.topics.change-request-transaction.name}")
     public String changeRequestTransactionTopic;
+    @Value("${workforce.topics.change-request-transaction-internal.name}")
+    public String changeRequestTransactionInternalTopic;
     @Value("${workforce.topics.dead-letter.name}")
     public String deadLetterTopic;
     @Value("${workforce.topics.load.name}")

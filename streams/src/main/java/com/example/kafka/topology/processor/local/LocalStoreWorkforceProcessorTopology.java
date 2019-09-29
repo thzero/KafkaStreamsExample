@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceProcessorTopology;
-import com.example.kafka.topology.processor.global.GlobalStoreMergeProcessor;
 
 @Component("localStoreWorkforceProcessorTopology")
 public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopology {
@@ -39,20 +38,19 @@ public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopo
         builder
                 .addSource(KeySourceChangeRequestInput, stringSerde.deserializer(), workforceChangeRequestSerde.deserializer(), appConfig.changeRequestTopic)
 
-                .addProcessor(GlobalStoreMergeProcessor.TAG, () -> new GlobalStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
+                .addProcessor(LocalStoreWorkforceProcessorTopology.TAG, () -> new LocalStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
                 .addStateStore(workforceStoreBuilder, LocalStoreMergeProcessor.TAG)
 
-                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
-                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
-                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG);
+                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
+                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
+                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG);
     }
 
     @Autowired
     private IMergeService _mergeService;
 
-    public static final String KeySourceChangeRequestInput = "changeRequest-input";
-    public static final String KeyStore = "workforce";
-    public static final String KeySourceLoad = "workforce-load";
+    public static final String KeySourceChangeRequestInput = "source-changeRequest-input";
+    public static final String KeyStore = "local-store-workforce";
 
     private static final String TAG = LocalStoreWorkforceProcessorTopology.class.getName();
 }

@@ -1,21 +1,25 @@
 package com.example.kafka.topology.processor;
 
-import com.example.kafka.data.ChangeRequestData;
-import com.example.kafka.data.WorkforceChangeRequestData;
-import com.example.kafka.data.WorkforceData;
-import com.example.kafka.response.MergeResponse;
-import com.example.kafka.service.IMergeService;
+import javax.validation.constraints.NotBlank;
+import java.util.Objects;
+
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.processor.To;
 import org.apache.kafka.streams.state.KeyValueStore;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotBlank;
-import java.util.Objects;
+import com.example.kafka.data.ChangeRequestData;
+import com.example.kafka.data.ChangeTypes;
+import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.data.WorkforceData;
+import com.example.kafka.response.MergeResponse;
+import com.example.kafka.service.IMergeService;
 
 public abstract class AbstractMergeProcessor extends AbstractProcessor<String, WorkforceChangeRequestData> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMergeProcessor.class);
@@ -44,38 +48,49 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
                 return;
             }
 
-            logger.debug("joinedStream - joiner for request id '{}'", changeRequest.getWorkforceRequestId());
+            logger.debug("request id '{}'", changeRequest.getWorkforceRequestId());
 
-            // Lookup the workforce data
-            WorkforceData workforceData = loadWorkforceData(changeRequest.getWorkforceRequestId());
-            if (workforceData == null) {
-                logger.warn("joinedStream - workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
-                // Write it to the dead-letter sink
-                changeRequest.status = ChangeRequestData.Status.NotFound;
-                context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
-                return;
+            WorkforceData workforceData = null;
+            if (changeRequest.changeTypeCd != ChangeTypes.Create) {
+                // Lookup the workforce data
+                workforceData = loadWorkforceData(changeRequest.getWorkforceRequestId());
+                if (workforceData == null) {
+                    logger.warn("workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
+                    // Write it to the dead-letter sink
+                    changeRequest.status = ChangeRequestData.Status.NotFound;
+                    context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
+                    context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
+                    return;
+                }
+                changeRequest.status = ChangeRequestData.Status.Found;
+                context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
             }
 
             // Merge the data
-            logger.debug("joinedStream - workforce data for request id '{}' was found!", changeRequest.getWorkforceRequestId());
-            logger.debug("joinedStream - before, key: '{}' | changeRequest: {} | joinedStream: {}", changeRequest.getWorkforceRequestId(), changeRequest.toString(), workforceData.toString());
+            logger.debug("workforce data for request id '{}' was found!", changeRequest.getWorkforceRequestId());
+            logger.debug("before, key: '{}' | changeRequest: {} | joinedStream: {}", changeRequest.getWorkforceRequestId(), changeRequest.toString(), workforceData.toString());
             MergeResponse response = _mergeService.merge(changeRequest, workforceData);
             if (!response.isSuccess()) {
-                logger.warn("joinedStream - workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
+                logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
                 // Write it to the dead-letter sink
-                changeRequest.status = ChangeRequestData.Status.Failed;
+                changeRequest.status = ChangeRequestData.Status.MergeFailed;
+                context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
                 context().commit();
                 return;
             }
-
-            logger.debug("joinedStream - after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
+            logger.debug("after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
+            changeRequest.status = ChangeRequestData.Status.Merged;
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             storeWorkforceData(key, response.changeRequest.snapshot);
+            changeRequest.status = ChangeRequestData.Status.Stored;
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             // Write the transaction to the transaction sink
-            changeRequest.status = ChangeRequestData.Status.Success;
             context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransaction));
+            changeRequest.status = ChangeRequestData.Status.Success;
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             context().commit();
         }
@@ -102,9 +117,10 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
     private IMergeService _mergeService;
 
-    public static final String KeySinkWorkforce = "workforce-out";
-    public static final String KeySinkWorkforceDeadLetter = "workforce-dead-letter";
-    public static final String KeySinkWorkforceTransaction = "workforce-transaction-out";
+    public static final String KeySinkWorkforceCheckpoint = "sink-workforce-checkpoint";
+    public static final String KeySinkWorkforceDeadLetter = "sink-workforce-dead-letter";
+    public static final String KeySinkWorkforceLoad = "sink-workforce-load";
+    public static final String KeySinkWorkforceTransaction = "sink-workforce-transaction-out";
 
     public static final String TAG = AbstractMergeProcessor.class.getName();
 }

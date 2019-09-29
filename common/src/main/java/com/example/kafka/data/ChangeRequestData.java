@@ -62,8 +62,11 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
 
     public enum Status {
         Initial,
-        Failed,
+        Found,
+        Merged,
+        MergeFailed,
         NotFound,
-        Success
+        Success,
+        Stored
     }
 }

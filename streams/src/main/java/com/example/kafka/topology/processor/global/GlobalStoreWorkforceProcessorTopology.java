@@ -16,7 +16,7 @@ import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceProcessorTopology;
 
-@Component("globalWorkforceProcessorTopology")
+@Component("globalStoreWorkforceProcessorTopology")
 public class GlobalStoreWorkforceProcessorTopology extends WorkforceProcessorTopology {
     private static final Logger logger = LoggerFactory.getLogger(GlobalStoreWorkforceProcessorTopology.class);
 
@@ -34,17 +34,18 @@ public class GlobalStoreWorkforceProcessorTopology extends WorkforceProcessorTop
 
                 .addProcessor(GlobalStoreMergeProcessor.TAG, () -> new GlobalStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
 
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
                 .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
-                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
-                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG);
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceLoad, appConfig.loadTopic, stringSerde.serializer(), workforceSerde.serializer(), GlobalStoreMergeProcessor.TAG);
     }
 
     @Autowired
     private IMergeService _mergeService;
 
-    public static final String KeySourceChangeRequestInput = "changeRequest-input";
-    public static final String KeyStore = "workforce";
-    public static final String KeySourceLoad = "workforce-load";
+    public static final String KeySourceChangeRequestInput = "source-changeRequest-input";
+    public static final String KeySourceLoad = "source-workforce-load";
+    public static final String KeyStore = "global-store-workforce";
 
     private static final String TAG = GlobalStoreWorkforceProcessorTopology.class.getName();
 }

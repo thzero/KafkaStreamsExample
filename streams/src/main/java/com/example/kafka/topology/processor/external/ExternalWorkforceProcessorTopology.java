@@ -23,16 +23,16 @@ public class ExternalWorkforceProcessorTopology extends WorkforceProcessorTopolo
 
                 .addProcessor(ExternalMergeProcessor.TAG, () -> new ExternalMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
 
+                .addSink(ExternalMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
-                .addSink(ExternalMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG);
     }
 
     @Autowired
     private IMergeService _mergeService;
 
-    public static final String KeySourceChangeRequestInput = "changeRequest-input";
-    public static final String KeyStore = "workforce";
+    public static final String KeySourceChangeRequestInput = "source-changeRequest-input";
+    public static final String KeyStore = "store-workforce";
 
     private static final String TAG = ExternalWorkforceProcessorTopology.class.getName();
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.kafka.config.BaseConfigRetriever;
 
-@Component("externaleWorkforceProcessorConfig")
+@Component("externalWorkforceProcessorConfig")
 public class ExternalWorkforceProcessorConfigRetriever extends BaseConfigRetriever {
     public Properties getProps() {
         Properties props = super.getProps();

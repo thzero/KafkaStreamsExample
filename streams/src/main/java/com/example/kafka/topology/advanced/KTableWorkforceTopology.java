@@ -67,7 +67,7 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
                     logger.debug("joinedStream - before, key: '{}' | leftValue: {} | rightValue: {}", leftValue.getWorkforceRequestId(), leftValue.toString(), (rightValue != null ? rightValue.toString() : null));
                     MergeResponse response = _mergeService.merge(leftValue, rightValue);
                     if (!response.isSuccess()) {
-                        leftValue.status = ChangeRequestData.Status.Failed;
+                        leftValue.status = ChangeRequestData.Status.MergeFailed;
                         logger.warn("joinedStream - workforce data for request id '{}' had the following error: {}", leftValue.getWorkforceRequestId(), response.getError());
                         return leftValue;
                     }
@@ -81,14 +81,14 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
         // Partitioned[1] contains valid entities
         KStream<String, WorkforceChangeRequestData>[] partitionedStatusStream = joinedStream.branch(
                 (k, v) -> {
-                    return ((v.status == ChangeRequestData.Status.NotFound) || (v.status == ChangeRequestData.Status.Failed));
+                    return ((v.status == ChangeRequestData.Status.NotFound) || (v.status == ChangeRequestData.Status.MergeFailed));
                 },
                 (k, v) -> true
         );
 
         // Bad messages - Join and merge was not successful.
         partitionedStatusStream[0]
-            .to(appConfig.changeRequestDeadLetterTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
+                .to(appConfig.changeRequestDeadLetterTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
 
         // Splitting the stream - send one record to the output topic, and another to the the transaction topic.
         // There is no native kafka copy or duplicate function, so using the flatMap to create a duplicate transaction record with a specific SplitType.Transaction.
@@ -118,7 +118,14 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
 
         // Write the transaction data to the transaction topic.
         partitionedOutputStream[0]
-            .to(appConfig.changeRequestTransactionTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
+                .through(appConfig.changeRequestTransactionInternalTopic, Produced.with(stringSerde, workforceChangeRequestSerde))
+                .map((KeyValueMapper<String, WorkforceChangeRequestData, KeyValue<String, WorkforceChangeRequestData>>) (key, value) -> {
+                    //
+                    value.request = null;
+                    value.snapshot = null;
+                    return new KeyValue<>(key, value);
+                })
+                .to(appConfig.changeRequestTransactionTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
 
         // Map down to the workforce data only and provide that to the output topic.
         KStream<String, WorkforceData> outputStream = partitionedOutputStream[1]

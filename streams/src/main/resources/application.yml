@@ -17,11 +17,11 @@ logging:
 applications:
   advanced:
     workforce-globalktable:
-      id: advanced-workforce-globalktable.v1.0.2
+      id: advanced-workforce-globalktable.v1.0.1
     workforce-ktable:
-      id: advanced-workforce.v1.0.2
+      id: advanced-workforce.v1.0.1
     workforce-update:
-      id: advanced-workforce-update.v1.0.2
+      id: advanced-workforce-update.v1.0.1
   bad-message:
     json-node-approach1:
       id: json-node-bad-message-approach1.v1
@@ -33,7 +33,7 @@ applications:
     workforce-external:
       id: processor-workforce-external.v1.0.1
     workforce-globalstore:
-      id: processor-workforce-globalstore.v1.0.1
+      id: processor-workforce-globalstore.v1.0.3
     workforce-localstore:
       id: processor-workforce-localstore.v1.0.1
   simple:
@@ -54,6 +54,8 @@ workforce:
       name: workforce_change_request_output
     change-request-transaction:
       name: workforce_change_request_transaction
+    change-request-transaction-internal:
+      name: workforce_change_request_transaction_internal
     dead-letter:
       name: workforce_dead_letter
     load:

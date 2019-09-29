@@ -63,6 +63,11 @@ public class DemoApplication {
 	}
 
 	@Bean
+	public NewTopic changeRequestTransactionInternalTopic() {
+		return new NewTopic(_topicNameConfig.changeRequestTransactionInternalTopic, 3, (short) 1);
+	}
+
+	@Bean
 	public NewTopic changeRequestTransactionTopic() {
 		return new NewTopic(_topicNameConfig.changeRequestTransactionTopic, 3, (short) 1);
 	}
