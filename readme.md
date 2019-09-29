@@ -1,10 +1,37 @@
-Kafka docker
+# Kafka Streams Demo
 
-Used Lenses.io docker image for lenses + kafka
-docker run -e ADV_HOST=127.0.0.1 -e EULA="" --rm -p  3030:3030 -p 9092:9092 landoop/kafka-lenses-dev
+This project is to test Kafka Streams usage for the processing of event change on workforce data, and publishing updated workforce data to an external source (in this case Mongo).
 
-Also used wurstmeister docker images with docker-composed
+The demo is made up of five projects:
 
+- Producer - Spring/Boot MVC project for generating workforce data, and sending in change requets.
+- Consumer - Spring/Boot project that listens for changes and publishes them.  It has a ReactJs application that the consumer communications with via web socket.  The ReactJS app displays results of the change requests.
+- Streams - A Spring/Boot app that was used to explore different options for using Streams DSL and Processor API.
+ - Simple - A simple DSL that loads data from a topic and publishes to another topic.
+ - Advanced - DSLs that use a KTable and GlobalKTable.
+ - Bad Messages - DSL that explores how to handle bad messages.
+ - Process - Processor API that implements the same functionality as Advanced, but using a StateStore and GlobalStateStore respectively.   Also includes a ProcessorAPI that instead of using a state store, uses Mongo as the store.
+- Common - Spring/Boot project that has common functionality, including a set of merge services.
+- Mongo - Spring/Boot project that implements service to read and write data to Mongo.
+
+# Running
+
+## Kafka docker
+
+The demo requires a Kafka servce to run.   There are many options for running a Kafka server.  The two that were used are:
+
+### Lenses
+
+This is a single docker image that includes the Lenses app, as well as Kafka.  You need to register to get the download from https://lenses.io/downloads.
+Once you've got the registered link, you can run the docker as follows:
+
+docker run -e ADV_HOST=127.0.0.1 -e EULA="<replace with your key>" --rm -p  3030:3030 -p 9092:9092 landoop/kafka-lenses-dev
+
+### Wurstmeister
+
+Also used the wurstmeister docker images with docker-compose.yml below
+
+```
 version: '2.4'
 services:
   zookeeper:
@@ -22,11 +49,25 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+```
 
-https://www.kaaproject.org/kafka-docker
+Save the docker-compose.yml into a directory.
+Run using
 
+docker-compose up -d
 
-Kafka links
+To stop
+
+docker-compose stop
+
+## Mongo
+
+If you are using the external Processor API example, then MongoDb is also needed.   By default the connection strings are expecting that the MongoDb is installed locally.
+
+# Kafka Links
+
+Some links on Kafka that were found useful.
+
 https://static.rainfocus.com/oracle/oraclecode18/sess/1515078353150001APG6/PF/Rethinking%20Stream%20Processing%20with%20KStreams%20and%20KSQL%20-%20OracleCode%20NYC%20-%2003-08-2018_1521054216095001D1Pu.pdf
 https://medium.com/@stephane.maarek/the-kafka-api-battle-producer-vs-consumer-vs-kafka-connect-vs-kafka-streams-vs-ksql-ef584274c1e
 
@@ -43,3 +84,27 @@ https://github.com/confluentinc/online-inferencing-blog-application
 
 https://blog.newrelic.com/engineering/effective-strategies-kafka-topic-partitioning/
 https://medium.com/@andy.bryant/kafka-streams-work-allocation-4f31c24753cc
+
+# License
+
+The MIT License
+
+Copyright (c) 2019 thzero.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
