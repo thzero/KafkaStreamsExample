@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceProcessorTopology;
-import com.example.kafka.topology.processor.global.GloablStoreMergeProcessor;
+import com.example.kafka.topology.processor.global.GlobalStoreMergeProcessor;
 
-@Component("advancedProcessorWorkforceTopology")
+@Component("localStoreWorkforceProcessorTopology")
 public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopology {
     private static final Logger logger = LoggerFactory.getLogger(LocalStoreWorkforceProcessorTopology.class);
 
@@ -39,12 +39,12 @@ public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopo
         builder
                 .addSource(KeySourceChangeRequestInput, stringSerde.deserializer(), workforceChangeRequestSerde.deserializer(), appConfig.changeRequestTopic)
 
-                .addProcessor(GloablStoreMergeProcessor.TAG, () -> new GloablStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
+                .addProcessor(GlobalStoreMergeProcessor.TAG, () -> new GlobalStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
                 .addStateStore(workforceStoreBuilder, LocalStoreMergeProcessor.TAG)
 
-                .addSink(GloablStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GloablStoreMergeProcessor.TAG)
-                .addSink(GloablStoreMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GloablStoreMergeProcessor.TAG)
-                .addSink(GloablStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GloablStoreMergeProcessor.TAG);
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforce, appConfig.changeRequestOutputTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG);
     }
 
     @Autowired

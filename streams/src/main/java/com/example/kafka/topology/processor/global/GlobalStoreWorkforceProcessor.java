@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.kafka.data.WorkforceData;
 
+// This processor updates the the global store for WorkforcecData from the load topic.
 public class GlobalStoreWorkforceProcessor extends AbstractProcessor<String, WorkforceData> {
     private static final Logger logger = LoggerFactory.getLogger(GlobalStoreWorkforceProcessor.class);
 
@@ -21,7 +22,7 @@ public class GlobalStoreWorkforceProcessor extends AbstractProcessor<String, Wor
 
     @Override
     public void process(String key, WorkforceData workforce) {
-        logger.debug("joinedStream - load for request id '{}'", workforce.id);
+        logger.debug("process - load for request id '{}'", workforce.id);
         _workforceStore.put(workforce.id, workforce);
     }
 

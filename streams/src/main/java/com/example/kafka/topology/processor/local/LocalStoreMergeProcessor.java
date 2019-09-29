@@ -20,9 +20,14 @@ public class LocalStoreMergeProcessor extends AbstractMergeProcessor {
     }
 
     @Override
-    protected void storeMergeResults(@NotBlank String key, WorkforceData workforce) {
+    protected WorkforceData loadWorkforceData(@NotBlank String key) {
+        return getWorkforceStore().get(key);
+    }
+
+    @Override
+    protected void storeWorkforceData(@NotBlank String key, WorkforceData workforce) {
         // Set the data back into the store
-        _workforceStore.put(key, workforce);
+        getWorkforceStore().put(key, workforce);
     }
 
     public static final String TAG = LocalStoreMergeProcessor.class.getName();

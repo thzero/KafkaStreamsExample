@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.example.kafka.config.BaseConfigRetriever;
 
-@Component("advancedProcessorWorkforceConfig")
-public class ProcessorWorkforceConfigRetriever extends BaseConfigRetriever {
+@Component("localStoreWorkforceProcessorConfig")
+public class LocalStoreWorkforceProcessorConfigRetriever extends BaseConfigRetriever {
     public Properties getProps() {
         Properties props = super.getProps();
 
@@ -31,6 +31,6 @@ public class ProcessorWorkforceConfigRetriever extends BaseConfigRetriever {
     @Override
     protected String getAppId() { return _appId; }
 
-    @Value("${applications.processor.workforce.id}")
+    @Value("${applications.processor.workforce-localstore.id}")
     private String _appId;
 }

@@ -27,6 +27,12 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
     }
 
     @Override
+    public void init(ProcessorContext context) {
+        super.init(context);
+        initializeStore();
+    }
+
+    @Override
     public void process(String key, WorkforceChangeRequestData changeRequest) {
         try {
             if (changeRequest == null) {
@@ -41,7 +47,7 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
             logger.debug("joinedStream - joiner for request id '{}'", changeRequest.getWorkforceRequestId());
 
             // Lookup the workforce data
-            WorkforceData workforceData = _workforceStore.get(changeRequest.getWorkforceRequestId());
+            WorkforceData workforceData = loadWorkforceData(changeRequest.getWorkforceRequestId());
             if (workforceData == null) {
                 logger.warn("joinedStream - workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
                 // Write it to the dead-letter sink
@@ -65,7 +71,7 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
             logger.debug("joinedStream - after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
 
-            storeMergeResults(key, response.changeRequest.snapshot);
+            storeWorkforceData(key, response.changeRequest.snapshot);
 
             // Write the transaction to the transaction sink
             changeRequest.status = ChangeRequestData.Status.Success;
@@ -79,18 +85,20 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
         }
     }
 
-    protected abstract void storeMergeResults(@NonNull @NotBlank String key, @NonNull WorkforceData workforce);
+    protected KeyValueStore<String, WorkforceData> getWorkforceStore() { return _workforceStore; }
 
-    @Override
     @SuppressWarnings("unchecked")
-    public void init(ProcessorContext context) {
-        super.init(context);
-        _workforceStore = (KeyValueStore<String, WorkforceData>)context.getStateStore(_storeName);
+    protected void initializeStore() {
+        _workforceStore = (KeyValueStore<String, WorkforceData>)context().getStateStore(_storeName);
         Objects.requireNonNull(_workforceStore, "State store can't be null");
     }
 
+    protected abstract WorkforceData loadWorkforceData(@NonNull @NotBlank String key);
+
+    protected abstract void storeWorkforceData(@NonNull @NotBlank String key, @NonNull WorkforceData workforce);
+
     private String _storeName;
-    protected KeyValueStore<String, WorkforceData> _workforceStore;
+    private KeyValueStore<String, WorkforceData> _workforceStore;
 
     private IMergeService _mergeService;
 

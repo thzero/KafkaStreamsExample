@@ -30,8 +30,12 @@ applications:
     workforce-approach2:
       id: workforce-bad-message-approach2.v1.01
   processor:
-    workforce:
-      id: processor-workforce.v1.0.1
+    workforce-external:
+      id: processor-workforce-external.v1.0.1
+    workforce-globalstore:
+      id: processor-workforce-globalstore.v1.0.1
+    workforce-localstore:
+      id: processor-workforce-localstore.v1.0.1
   simple:
     id: simple-request.v1
 
