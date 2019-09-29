@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.example.kafka.service.IMergeService;
+import com.example.kafka.service.IStoreWorkforceService;
 import com.example.kafka.topology.WorkforceProcessorTopology;
 
 @Component("externalWorkforceProcessorTopology")
@@ -21,7 +22,7 @@ public class ExternalWorkforceProcessorTopology extends WorkforceProcessorTopolo
         builder
                 .addSource(KeySourceChangeRequestInput, stringSerde.deserializer(), workforceChangeRequestSerde.deserializer(), appConfig.changeRequestTopic)
 
-                .addProcessor(ExternalMergeProcessor.TAG, () -> new ExternalMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
+                .addProcessor(ExternalMergeProcessor.TAG, () -> new ExternalMergeProcessor(_mergeService, _storeService), KeySourceChangeRequestInput)
 
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
@@ -32,8 +33,10 @@ public class ExternalWorkforceProcessorTopology extends WorkforceProcessorTopolo
     @Autowired
     private IMergeService _mergeService;
 
+    @Autowired
+    private IStoreWorkforceService _storeService;
+
     public static final String KeySourceChangeRequestInput = "source-changeRequest-input";
-    public static final String KeyStore = "store-workforce";
 
     private static final String TAG = ExternalWorkforceProcessorTopology.class.getName();
 }

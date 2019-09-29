@@ -1,7 +1,9 @@
 package com.example.kafka.topology.processor;
 
-import javax.validation.constraints.NotBlank;
+import java.time.Instant;
 import java.util.Objects;
+
+import javax.validation.constraints.NotBlank;
 
 import org.apache.kafka.streams.processor.AbstractProcessor;
 import org.apache.kafka.streams.processor.ProcessorContext;
@@ -14,11 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 
-import com.example.kafka.data.ChangeRequestData;
-import com.example.kafka.data.ChangeTypes;
-import com.example.kafka.data.WorkforceChangeRequestData;
-import com.example.kafka.data.WorkforceData;
-import com.example.kafka.response.MergeResponse;
+import com.example.kafka.DateUtils;
+import com.example.kafka.data.*;
+import com.example.kafka.response.service.MergeResponse;
 import com.example.kafka.service.IMergeService;
 
 public abstract class AbstractMergeProcessor extends AbstractProcessor<String, WorkforceChangeRequestData> {
@@ -38,16 +38,16 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
     @Override
     public void process(String key, WorkforceChangeRequestData changeRequest) {
-        try {
-            if (changeRequest == null) {
-                context().commit();
-                return;
-            }
-            if (StringUtils.isEmpty(changeRequest.getWorkforceRequestId())) {
-                context().commit();
-                return;
-            }
+        if (changeRequest == null) {
+            context().commit();
+            return;
+        }
+        if (StringUtils.isEmpty(changeRequest.getWorkforceRequestId())) {
+            context().commit();
+            return;
+        }
 
+        try {
             logger.debug("request id '{}'", changeRequest.getWorkforceRequestId());
 
             WorkforceData workforceData = null;
@@ -57,34 +57,40 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
                 if (workforceData == null) {
                     logger.warn("workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
                     // Write it to the dead-letter sink
-                    changeRequest.status = ChangeRequestData.Status.NotFound;
+                    setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.NotFound);
                     context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
                     context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
                     return;
                 }
-                changeRequest.status = ChangeRequestData.Status.Found;
+                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Found);
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
             }
 
-            // Merge the data
             logger.debug("workforce data for request id '{}' was found!", changeRequest.getWorkforceRequestId());
+
+            // Merge the data
             logger.debug("before, key: '{}' | changeRequest: {} | joinedStream: {}", changeRequest.getWorkforceRequestId(), changeRequest.toString(), workforceData.toString());
-            MergeResponse response = _mergeService.merge(changeRequest, workforceData);
+            MergeResponse response = getMergeService().merge(changeRequest, workforceData);
             if (!response.isSuccess()) {
                 logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
                 // Write it to the dead-letter sink
-                changeRequest.status = ChangeRequestData.Status.MergeFailed;
+                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.MergeFailed);
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
                 context().commit();
                 return;
             }
             logger.debug("after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
-            changeRequest.status = ChangeRequestData.Status.Merged;
+            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Merged);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
-            storeWorkforceData(key, response.changeRequest.snapshot);
-            changeRequest.status = ChangeRequestData.Status.Stored;
+            boolean result = storeWorkforceData(key, response.changeRequest.snapshot);
+            if (!result) {
+                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.StoreFailed);
+                context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
+                return;
+            }
+            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Stored);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             // Write the transaction to the transaction internal sink
@@ -97,18 +103,31 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
             // Write the transaction to the transaction external sink
             context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransaction));
 
-            changeRequest.status = ChangeRequestData.Status.Success;
+            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Success);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             context().commit();
         }
         catch (Exception ex) {
             logger.debug(TAG, ex);
+            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Failed);
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
             context().commit();
         }
     }
 
+    protected void setProcessedStatus(@NonNull WorkforceChangeRequestData changeRequest, ChangeRequestData.ProcessStatus status) {
+        Instant instant = Instant.now();
+        changeRequest.processDate = DateUtils.toDate(instant);
+        changeRequest.processTimestamp = DateUtils.toEpochSeconds(instant);
+        changeRequest.processStatus = status;
+    }
+
     protected KeyValueStore<String, WorkforceData> getWorkforceStore() { return _workforceStore; }
+
+    protected IMergeService getMergeService() {
+        return _mergeService;
+    }
 
     @SuppressWarnings("unchecked")
     protected void initializeStore() {
@@ -118,7 +137,7 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
     protected abstract WorkforceData loadWorkforceData(@NonNull @NotBlank String key);
 
-    protected abstract void storeWorkforceData(@NonNull @NotBlank String key, @NonNull WorkforceData workforce);
+    protected abstract boolean storeWorkforceData(@NonNull @NotBlank String key, @NonNull WorkforceData workforce);
 
     private String _storeName;
     private KeyValueStore<String, WorkforceData> _workforceStore;

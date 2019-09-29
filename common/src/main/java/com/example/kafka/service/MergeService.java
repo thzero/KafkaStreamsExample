@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
-import com.example.kafka.response.MergeResponse;
+import com.example.kafka.response.service.MergeResponse;
 
 @Service
 public class MergeService extends BaseService implements IMergeService {

@@ -1,6 +1,7 @@
-package com.example.kafka.response;
+package com.example.kafka.response.service;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.response.SuccessResponse;
 
 public class MergeResponse extends SuccessResponse {
     public MergeResponse() {}

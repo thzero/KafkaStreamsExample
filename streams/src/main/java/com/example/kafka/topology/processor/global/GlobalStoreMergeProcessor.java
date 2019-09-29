@@ -27,9 +27,10 @@ public class GlobalStoreMergeProcessor extends AbstractMergeProcessor {
     }
 
     @Override
-    protected void storeWorkforceData(@NonNull @NotBlank String key, @NonNull WorkforceData workforce) {
+    protected boolean storeWorkforceData(@NonNull @NotBlank String key, @NonNull WorkforceData workforce) {
         // Write the snapshot to the output sink
         context().forward(key, workforce, To.child(KeySinkWorkforceLoad));
+        return true;
     }
 
     public static final String TAG = GlobalStoreMergeProcessor.class.getName();

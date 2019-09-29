@@ -14,7 +14,7 @@ import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.response.ISuccessResponse;
-import com.example.kafka.response.MergeResponse;
+import com.example.kafka.response.service.MergeResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IActionMergeService;
 import com.example.kafka.service.IDeleteSubActionMergeService;

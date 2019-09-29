@@ -30,5 +30,4 @@ public class SimpleStreamBuilder extends BaseStreamBuilder {
     @Autowired
     @Qualifier("simpleTopology")
     private ITopology _topologyBuilder;
-
 }

@@ -2,7 +2,6 @@ package com.example.kafka.service.delete;
 
 import java.util.Optional;
 
-import com.example.kafka.response.MergeResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 

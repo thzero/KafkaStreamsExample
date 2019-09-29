@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.example.kafka.data.*;
-import com.example.kafka.response.MergeResponse;
+import com.example.kafka.response.service.MergeResponse;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceStreamsBuilderTopology;
 
@@ -44,14 +44,10 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
         //
         // The KTable has to be updated independently... there might be some lag, would it be better to wait for external
         // connect to fetch the document, the write the document, before moving on?
-        //
-        // Or use a Kafka Streams Processor API?
-        // https://docs.confluent.io/current/streams/developer-guide/processor-api.html#streams-developer-guide-processor-api
         KStream<String, WorkforceChangeRequestData> joinedStream =
                 inputStream.leftJoin(workforcesTable,
                 (leftValue, rightValue) -> {
                     logger.debug("joinedStream - joiner for request id '{}'", leftValue.getWorkforceRequestId());
-                    leftValue.processStep = ChangeRequestData.ProcessStatus.Join;
 
                     if (rightValue == null) {
                         if (leftValue.changeTypeCd != ChangeTypes.Create) {
@@ -63,7 +59,6 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
 
                     logger.debug("joinedStream - workforce data for request id '{}' was found!", leftValue.getWorkforceRequestId());
 
-                    leftValue.processStep = ChangeRequestData.ProcessStatus.Merge;
                     logger.debug("joinedStream - before, key: '{}' | leftValue: {} | rightValue: {}", leftValue.getWorkforceRequestId(), leftValue.toString(), (rightValue != null ? rightValue.toString() : null));
                     MergeResponse response = _mergeService.merge(leftValue, rightValue);
                     if (!response.isSuccess()) {
@@ -99,9 +94,7 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
             partitionedStatusStream[1].flatMap((KeyValueMapper<String, WorkforceChangeRequestData, Iterable<? extends KeyValue<String, WorkforceChangeRequestData>>>) (key, value) -> {
                 List<KeyValue<String, WorkforceChangeRequestData>> result = new ArrayList<>();
                 logger.debug("splitStream - key: '{}' | value: {}", value.getWorkforceRequestId(), value.toString());
-                value.processStep = ChangeRequestData.ProcessStatus.Split;
                 WorkforceChangeRequestData changeRequest = new WorkforceChangeRequestData(UUID.randomUUID().toString(), value, SplitTypes.Transaction);
-                changeRequest.processStep = ChangeRequestData.ProcessStatus.Split;
                 result.add(new KeyValue<>(changeRequest.id, changeRequest));
                 result.add(new KeyValue<>(key, value));
                 return result;

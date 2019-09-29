@@ -6,7 +6,7 @@ import com.example.kafka.data.ChangeSubTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.response.ISuccessResponse;
 
-public interface ISubActionMergeService {
+public interface ISubActionMergeService extends IService {
     ChangeSubTypes getChangeSubTypeCd();
     ISuccessResponse valid(@NonNull WorkforceChangeRequestData changeRequest);
 }

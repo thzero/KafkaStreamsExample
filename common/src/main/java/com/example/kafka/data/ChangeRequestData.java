@@ -44,7 +44,7 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
     public ChangeTypes changeTypeCd; // add? delete? update?
     public int index;
     public Date processDate;
-    public ProcessStatus processStep = ProcessStatus.Initial;
+    public ProcessStatus processStatus = ProcessStatus.Initial;
     public long processTimestamp;
     public Date requestedDate;
     public long requestedTimestamp;
@@ -53,20 +53,20 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
 
     public enum ProcessStatus {
         Initial,
+        Deleted,
         Failed,
-        Join,
-        Merge,
-        Split,
-        Success
-    }
-
-    public enum Status {
-        Initial,
         Found,
         Merged,
         MergeFailed,
         NotFound,
         Success,
-        Stored
+        Stored,
+        StoreFailed
+    }
+
+    public enum Status {
+        Initial,
+        MergeFailed,
+        NotFound
     }
 }

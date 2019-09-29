@@ -18,7 +18,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.example.kafka.data.*;
-import com.example.kafka.response.MergeResponse;
+import com.example.kafka.response.service.MergeResponse;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.topology.WorkforceStreamsBuilderTopology;
 
@@ -47,9 +47,6 @@ public class GlobalKTableWorkforceTopology extends WorkforceStreamsBuilderTopolo
         //
         // The GlobalKTable has to be updated independently... there might be some lag, would it be better to wait for external
         // connect to fetch the document, the write the document, before moving on?
-        //
-        // Or use a Kafka Streams Processor API?
-        // https://docs.confluent.io/current/streams/developer-guide/processor-api.html#streams-developer-guide-processor-api
         KStream<String, WorkforceChangeRequestData> joinedStream =
                 inputStream.leftJoin(workforcesTable,
                 (key, value) -> {
