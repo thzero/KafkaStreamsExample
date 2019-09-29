@@ -77,8 +77,6 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
                     return response.changeRequest;
                 });
 
-        // Maybe do a map here, instead of doing both a join and merge in one step.
-
         // Partitioned[0] contains entities that either could not be found (for delete and update requests) or failed, to be sent to dead letter
         // Partitioned[1] contains valid entities
         KStream<String, WorkforceChangeRequestData>[] partitionedStatusStream = joinedStream.branch(
