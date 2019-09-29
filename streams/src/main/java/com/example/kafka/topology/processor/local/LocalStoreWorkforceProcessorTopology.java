@@ -43,7 +43,8 @@ public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopo
 
                 .addSink(LocalStoreMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
                 .addSink(LocalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
-                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG);
+                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
+                .addSink(LocalStoreMergeProcessor.KeySinkWorkforceTransactionInternal, appConfig.changeRequestTransactionInternalTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG);
     }
 
     @Autowired

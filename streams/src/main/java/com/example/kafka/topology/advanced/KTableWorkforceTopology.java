@@ -120,7 +120,7 @@ public class KTableWorkforceTopology extends WorkforceStreamsBuilderTopology {
         partitionedOutputStream[0]
                 .through(appConfig.changeRequestTransactionInternalTopic, Produced.with(stringSerde, workforceChangeRequestSerde))
                 .map((KeyValueMapper<String, WorkforceChangeRequestData, KeyValue<String, WorkforceChangeRequestData>>) (key, value) -> {
-                    //
+                    // Remove the request and snapshot; do not want to send the data when announcing a transaction
                     value.request = null;
                     value.snapshot = null;
                     return new KeyValue<>(key, value);

@@ -8,7 +8,7 @@ import com.example.kafka.config.IKafkaConfigRetriever;
 import com.example.kafka.streams.BaseStreamBuilder;
 import com.example.kafka.topology.ITopology;
 
-//@Component
+@Component
 public class ExternalWorkforceProcessorStreamBuilder extends BaseStreamBuilder {
     @Override
     protected IKafkaConfigRetriever getConfig() {

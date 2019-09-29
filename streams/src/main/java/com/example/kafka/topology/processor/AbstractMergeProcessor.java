@@ -87,8 +87,16 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
             changeRequest.status = ChangeRequestData.Status.Stored;
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
-            // Write the transaction to the transaction sink
+            // Write the transaction to the transaction internal sink
+            context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransactionInternal));
+
+            // Remove the request and snapshot; do not want to send the data when announcing a transaction
+            response.changeRequest.request = null;
+            response.changeRequest.snapshot = null;
+
+            // Write the transaction to the transaction external sink
             context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransaction));
+
             changeRequest.status = ChangeRequestData.Status.Success;
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
@@ -120,7 +128,8 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
     public static final String KeySinkWorkforceCheckpoint = "sink-workforce-checkpoint";
     public static final String KeySinkWorkforceDeadLetter = "sink-workforce-dead-letter";
     public static final String KeySinkWorkforceLoad = "sink-workforce-load";
-    public static final String KeySinkWorkforceTransaction = "sink-workforce-transaction-out";
+    public static final String KeySinkWorkforceTransaction = "sink-workforce-transaction";
+    public static final String KeySinkWorkforceTransactionInternal = "sink-workforce-transaction-internal";
 
     public static final String TAG = AbstractMergeProcessor.class.getName();
 }

@@ -37,6 +37,7 @@ public class GlobalStoreWorkforceProcessorTopology extends WorkforceProcessorTop
                 .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
                 .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
                 .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
+                .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceTransactionInternal, appConfig.changeRequestTransactionInternalTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), GlobalStoreMergeProcessor.TAG)
                 .addSink(GlobalStoreMergeProcessor.KeySinkWorkforceLoad, appConfig.loadTopic, stringSerde.serializer(), workforceSerde.serializer(), GlobalStoreMergeProcessor.TAG);
     }
 
