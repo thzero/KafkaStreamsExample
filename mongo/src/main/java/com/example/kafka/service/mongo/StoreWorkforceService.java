@@ -18,8 +18,8 @@ import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IStoreWorkforceService;
 
 @Component
-public class MongoService extends BaseService implements IStoreWorkforceService {
-    private static final Logger logger = LoggerFactory.getLogger(MongoService.class);
+public class StoreWorkforceService extends BaseService implements IStoreWorkforceService {
+    private static final Logger logger = LoggerFactory.getLogger(StoreWorkforceService.class);
 
     @Override
     public RetrieveStoreWorkforceResponse retrieve(RetrieveStoreWorkforceRequest request) {
@@ -67,5 +67,5 @@ public class MongoService extends BaseService implements IStoreWorkforceService 
 
     private static final String CollectionName = "workforce";
 
-    private static final String TAG = MongoService.class.getName();
+    private static final String TAG = StoreWorkforceService.class.getName();
 }

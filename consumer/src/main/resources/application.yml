@@ -21,7 +21,11 @@ application:
 
 workforce:
   topics:
+    change-request-checkpoint:
+      name: workforce_change_request_checkpoint
     change-request-output:
       name: workforce_change_request_output
     change-request-transaction:
       name: workforce_change_request_transaction
+    change-request-transaction-internal:
+      name: workforce_change_request_transaction_internal

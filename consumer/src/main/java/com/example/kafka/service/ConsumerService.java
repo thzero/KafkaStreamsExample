@@ -2,7 +2,6 @@ package com.example.kafka.service;
 
 import java.util.stream.StreamSupport;
 
-import com.example.kafka.data.WorkforceChangeRequestData;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;
 
@@ -15,6 +14,8 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
 import com.example.kafka.service.communication.ICommunicationService;
 
 @Service
@@ -29,10 +30,29 @@ public class ConsumerService implements IConsumerService {
 //        _communicationService.transaction(cr.key(), payload);
 //    }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
-    public void listenAsStringOutput(ConsumerRecord<String, String> cr,  @Payload String payload, Acknowledgment ack) throws Exception {
-        logger.debug("listenAsStringOutput received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+    @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+        logger.debug("listenAsObjectCheckpoint received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+
         ack.acknowledge();
+
+        _storeService.saveCheckpoint(new SaveExternalStoreWorkforceRequest(payload));
+    }
+
+    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    public void listenAsObjectOutput(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+        logger.debug("listenAsObjectOutput received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+        ack.acknowledge();
+
+        _storeService.saveOutput(new SaveExternalStoreWorkforceRequest(payload));
+    }
+
+    @KafkaListener(topics = "${workforce.topics.change-request-transaction-internal.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    public void listenAsObjectTransactionInternal(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+        logger.debug("listenAsObjectTransactionInternal received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+        ack.acknowledge();
+
+        _storeService.saveTransactionInternal(new SaveExternalStoreWorkforceRequest(payload));
     }
 
     @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
@@ -57,4 +77,7 @@ public class ConsumerService implements IConsumerService {
 
     @Autowired
     private ICommunicationService _communicationService;
+
+    @Autowired
+    private IExternalStoreWorkforceService _storeService;
 }

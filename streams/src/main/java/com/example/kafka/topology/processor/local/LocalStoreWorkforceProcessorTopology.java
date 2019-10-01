@@ -36,10 +36,12 @@ public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopo
                 .withLoggingEnabled(changelogConfig);
 
         builder
+                .addSource(KeySourceLoad, stringSerde.deserializer(), workforceSerde.deserializer(), appConfig.loadTopic)
                 .addSource(KeySourceChangeRequestInput, stringSerde.deserializer(), workforceChangeRequestSerde.deserializer(), appConfig.changeRequestTopic)
 
+                .addProcessor(LocalStoreWorkforceProcessor.TAG, () -> new LocalStoreWorkforceProcessor(KeyStore), KeySourceLoad)
                 .addProcessor(LocalStoreWorkforceProcessorTopology.TAG, () -> new LocalStoreMergeProcessor(KeyStore, _mergeService), KeySourceChangeRequestInput)
-                .addStateStore(workforceStoreBuilder, LocalStoreMergeProcessor.TAG)
+                .addStateStore(workforceStoreBuilder, LocalStoreMergeProcessor.TAG, LocalStoreWorkforceProcessor.TAG)
 
                 .addSink(LocalStoreMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
                 .addSink(LocalStoreMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), LocalStoreMergeProcessor.TAG)
@@ -51,6 +53,7 @@ public class LocalStoreWorkforceProcessorTopology extends WorkforceProcessorTopo
     private IMergeService _mergeService;
 
     public static final String KeySourceChangeRequestInput = "source-changeRequest-input";
+    public static final String KeySourceLoad = "source-load";
     public static final String KeyStore = "local-store-workforce";
 
     private static final String TAG = LocalStoreWorkforceProcessorTopology.class.getName();
