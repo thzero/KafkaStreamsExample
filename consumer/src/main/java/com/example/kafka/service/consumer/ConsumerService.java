@@ -1,7 +1,9 @@
-package com.example.kafka.service;
+package com.example.kafka.service.consumer;
 
 import java.util.stream.StreamSupport;
 
+import com.example.kafka.service.BaseService;
+import com.example.kafka.service.IExternalStoreWorkforceService;
 import com.example.kafka.service.communication.ICommunicationService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;

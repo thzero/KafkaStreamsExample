@@ -20,7 +20,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.example.kafka.service.IConsumerService;
+import com.example.kafka.service.consumer.IConsumerService;
 
 @SpringBootApplication
 public class DemoApplication {
