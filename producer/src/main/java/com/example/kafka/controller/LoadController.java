@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.kafka.response.LoadWorkforceResponse;
-import com.example.kafka.service.IExternalLoadWorkforceService;
-import com.example.kafka.service.ILoadProducerService;
+import com.example.kafka.service.load.IExternalLoadWorkforceService;
+import com.example.kafka.service.load.IProducerLoadWorkforceService;
 
 @RestController
 public class LoadController {
@@ -33,5 +33,5 @@ public class LoadController {
     private IExternalLoadWorkforceService _loadExternalService;
 
     @Autowired
-    private ILoadProducerService _loadProducerService;
+    private IProducerLoadWorkforceService _loadProducerService;
 }

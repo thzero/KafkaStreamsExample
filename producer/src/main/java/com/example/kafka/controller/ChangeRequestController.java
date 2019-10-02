@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.kafka.request.ChangeRequest;
 import com.example.kafka.response.UpdateProducerResponse;
-import com.example.kafka.service.IChangeRequestProducerService;
+import com.example.kafka.service.changeRequest.IProducerChangeRequestWorkforceService;
 
 @RestController
 public class ChangeRequestController {
@@ -29,7 +29,7 @@ public class ChangeRequestController {
     }
 
     @Autowired
-    private IChangeRequestProducerService _changeRequestProducerService;
+    private IProducerChangeRequestWorkforceService _changeRequestProducerService;
 
     private static final String TAG = ChangeRequestController.class.getName();
 }

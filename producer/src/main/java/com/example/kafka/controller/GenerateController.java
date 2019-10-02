@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.kafka.response.GenerateProducerResponse;
-import com.example.kafka.service.GenerateProducerService;
+import com.example.kafka.service.generate.kafka.ProducerGenerateWorkforceService;
 
 @RestController
 public class GenerateController {
@@ -20,5 +20,5 @@ public class GenerateController {
     }
 
     @Autowired
-    private GenerateProducerService _generateProducerService;
+    private ProducerGenerateWorkforceService _generateProducerService;
 }

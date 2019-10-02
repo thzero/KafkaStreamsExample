@@ -1,6 +1,4 @@
-package com.example.kafka.service;
-
-import java.util.UUID;
+package com.example.kafka.service.generate.kafka;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +8,15 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import com.example.kafka.config.AppConfig;
-import com.example.kafka.data.WorkforceData;
 import com.example.kafka.data.ProviderWorkforceData;
 import com.example.kafka.response.GenerateProducerResponse;
+import com.example.kafka.service.BaseService;
+import com.example.kafka.service.CsvToJson;
+import com.example.kafka.service.generate.IProducerGenerateWorkforceService;
 
 @Component
-public class GenerateProducerService implements IGenerateProducerService {
-    private static final Logger logger = LoggerFactory.getLogger(GenerateProducerService.class);
+public class ProducerGenerateWorkforceService extends BaseService implements IProducerGenerateWorkforceService {
+    private static final Logger logger = LoggerFactory.getLogger(ProducerGenerateWorkforceService.class);
 
     public GenerateProducerResponse generateFromCsv() {
        try {
@@ -44,5 +44,5 @@ public class GenerateProducerService implements IGenerateProducerService {
     @Autowired
     private AppConfig _appConfig;
 
-    private static final String TAG = GenerateProducerService.class.getName();
+    private static final String TAG = ProducerGenerateWorkforceService.class.getName();
 }

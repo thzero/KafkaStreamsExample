@@ -1,4 +1,4 @@
-package com.example.kafka.service;
+package com.example.kafka.service.changeRequest.kafka;
 
 import java.time.Instant;
 import java.util.List;
@@ -15,10 +15,13 @@ import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.response.ISuccessResponse;
 import com.example.kafka.response.UpdateProducerResponse;
+import com.example.kafka.service.BaseService;
+import com.example.kafka.service.IMergeService;
+import com.example.kafka.service.changeRequest.IProducerChangeRequestWorkforceService;
 
 @Service
-public class ChangeRequestProducerService implements IChangeRequestProducerService {
-    private static final Logger logger = LoggerFactory.getLogger(ChangeRequestProducerService.class);
+public class ProducerChangeRequestWorkforceService extends BaseService implements IProducerChangeRequestWorkforceService {
+    private static final Logger logger = LoggerFactory.getLogger(ProducerChangeRequestWorkforceService.class);
 
     @Override
     public UpdateProducerResponse submit(List<WorkforceChangeRequestData> changesRequests) throws Exception {
@@ -70,5 +73,5 @@ public class ChangeRequestProducerService implements IChangeRequestProducerServi
     @Autowired
     private AppConfig _appConfig;
 
-    private static final String TAG = ChangeRequestProducerService.class.getName();
+    private static final String TAG = ProducerChangeRequestWorkforceService.class.getName();
 }
