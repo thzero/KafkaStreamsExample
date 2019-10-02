@@ -20,7 +20,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.example.kafka.service.consumer.IConsumerService;
+import com.example.kafka.service.consumer.IGenericConsumerService;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -108,5 +108,5 @@ public class DemoApplication {
 	private String _groupId;
 
 	@Autowired
-	private IConsumerService _consumerService;
+	private IGenericConsumerService _consumerService;
 }

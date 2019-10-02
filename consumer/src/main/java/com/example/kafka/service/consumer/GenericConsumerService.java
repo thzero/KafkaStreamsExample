@@ -23,8 +23,8 @@ import com.example.kafka.service.communication.ICommunicationService;
 import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
 
 @Service
-public class ConsumerService extends BaseService implements IConsumerService {
-    private static final Logger logger = LoggerFactory.getLogger(ConsumerService.class);
+public class GenericConsumerService extends BaseService implements IGenericConsumerService {
+    private static final Logger logger = LoggerFactory.getLogger(GenericConsumerService.class);
 
 //    @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "json", containerFactory = "kafkaListenerContainerFactory")
 //    public void listenAsObject(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
