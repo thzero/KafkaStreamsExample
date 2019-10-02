@@ -3,7 +3,7 @@ package com.example.kafka.service.communication.simp;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-import com.example.kafka.service.ICommunicationService;
+import com.example.kafka.service.communication.ICommunicationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

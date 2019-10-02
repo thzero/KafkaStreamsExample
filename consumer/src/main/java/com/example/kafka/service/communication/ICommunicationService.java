@@ -1,6 +1,7 @@
-package com.example.kafka.service;
+package com.example.kafka.service.communication;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.service.IService;
 
 public interface ICommunicationService extends IService {
     void greet(String greeting);

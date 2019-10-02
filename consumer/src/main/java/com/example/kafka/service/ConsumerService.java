@@ -2,6 +2,7 @@ package com.example.kafka.service;
 
 import java.util.stream.StreamSupport;
 
+import com.example.kafka.service.communication.ICommunicationService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Headers;
 

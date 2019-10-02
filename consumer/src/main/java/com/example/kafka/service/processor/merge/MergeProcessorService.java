@@ -24,7 +24,7 @@ import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
 import com.example.kafka.response.service.SaveStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IMergeService;
-import com.example.kafka.service.IPublishService;
+import com.example.kafka.service.publish.IPublishService;
 import com.example.kafka.service.IStoreWorkforceService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 

@@ -5,7 +5,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IPublishService;
+import com.example.kafka.service.publish.IPublishService;
 
 @Service
 public class PublishService extends BaseService implements IPublishService {
