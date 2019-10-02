@@ -23,7 +23,7 @@ public class LoadProducerService implements ILoadProducerService {
 
     public LoadWorkforceResponse loadJson() throws Exception {
         try {
-            logger.debug("loadRandom - Starting load of workforce data from json...");
+            logger.debug("loadJson - Starting load of workforce data from json...");
 
             LoadWorkforceResponse response = new LoadWorkforceResponse();
             File resource = new ClassPathResource("data.json").getFile();
@@ -42,7 +42,7 @@ public class LoadProducerService implements ILoadProducerService {
             throw ex;
         }
         finally {
-            logger.debug("loadRandom - Finished load of workforce data from json");
+            logger.debug("loadJson - Finished load of workforce data from json");
         }
     }
 

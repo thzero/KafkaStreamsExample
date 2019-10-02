@@ -23,7 +23,7 @@ public class LoadExternalService implements IExternalLoadWorkforceService {
 
     public LoadWorkforceResponse loadJson() throws Exception {
         try {
-            logger.debug("loadRandom - Starting load of workforce data from json...");
+            logger.debug("loadJson - Starting load of workforce data from json...");
 
             LoadWorkforceResponse response = new LoadWorkforceResponse();
             File resource = new ClassPathResource("data.json").getFile();
@@ -42,7 +42,7 @@ public class LoadExternalService implements IExternalLoadWorkforceService {
             throw ex;
         }
         finally {
-            logger.debug("loadRandom - Finished load of workforce data from json");
+            logger.debug("loadJson - Finished load of workforce data from json");
         }
     }
 

@@ -20,7 +20,7 @@ public class GenerateProducerService implements IGenerateProducerService {
 
     public GenerateProducerResponse generateFromCsv() {
        try {
-           logger.debug("loadRandom - Starting generate from csv...");
+           logger.debug("generateFromCsv - Starting generate from csv...");
 
            GenerateProducerResponse response = new GenerateProducerResponse();
            response.workforce = new ProviderWorkforceData();
@@ -34,7 +34,7 @@ public class GenerateProducerService implements IGenerateProducerService {
            throw ex;
        }
        finally {
-           logger.debug("loadRandom - Finished generate from csv");
+           logger.debug("generateFromCsv - Finished generate from csv");
        }
     }
 
