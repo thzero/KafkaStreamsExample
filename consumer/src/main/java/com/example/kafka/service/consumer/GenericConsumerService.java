@@ -35,7 +35,7 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
 //        _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
 //    }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
     public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsObjectCheckpoint received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
 
@@ -44,7 +44,7 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
         _storeService.saveCheckpoint(new SaveExternalStoreWorkforceRequest(payload));
     }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
     public void listenAsObjectOutput(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsObjectOutput received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();
@@ -52,7 +52,7 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
         _storeService.saveOutput(new SaveExternalStoreWorkforceRequest(payload));
     }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-transaction-internal.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    @KafkaListener(topics = "${workforce.topics.change-request-transaction-internal.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
     public void listenAsObjectTransactionInternal(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsObjectTransactionInternal received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();

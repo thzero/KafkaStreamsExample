@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 
 import com.example.kafka.config.AppConfig;
-import com.example.kafka.streams.SerdeUtils;
+import com.example.kafka.SerdeUtils;
 
 public abstract class JsonNodeBaseTopology implements ITopology {
     private static final Logger logger = LoggerFactory.getLogger(JsonNodeBaseTopology.class);

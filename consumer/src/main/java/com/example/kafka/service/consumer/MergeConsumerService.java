@@ -22,7 +22,7 @@ import com.example.kafka.service.processor.IMergeProcessorService;
 public class MergeConsumerService extends BaseService implements IMergeConsumerService {
     private static final Logger logger = LoggerFactory.getLogger(MergeConsumerService.class);
 
-    @KafkaListener(topics = "${workforce.topics.change-request.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
+    @KafkaListener(topics = "${workforce.topics.change-request.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
     public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) {
         logger.debug("listenAsObjectCheckpoint received key {}: Payload: {} | Record: {}", cr.key(), payload, cr.toString());
 

@@ -8,16 +8,14 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.connect.json.JsonDeserializer;
 import org.apache.kafka.connect.json.JsonSerializer;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
-import com.example.kafka.streams.SerdeUtils;
+import com.example.kafka.SerdeUtils;
 
 public abstract class WorkforceBaseTopology implements ITopology {
     @Override

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
-import com.example.kafka.streams.SerdeUtils;
+import com.example.kafka.SerdeUtils;
 import com.example.kafka.topology.ITopology;
 
 @Component("workforceBadMessageApproach1Topology")

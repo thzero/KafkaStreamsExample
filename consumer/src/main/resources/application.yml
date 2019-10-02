@@ -25,9 +25,20 @@ workforce:
       name: workforce_change_request
     change-request-checkpoint:
       name: workforce_change_request_checkpoint
+    change-request-dead-letter:
+      name: workforce_change_request_dead_letter
     change-request-output:
       name: workforce_change_request_output
     change-request-transaction:
       name: workforce_change_request_transaction
     change-request-transaction-internal:
       name: workforce_change_request_transaction_internal
+    dead-letter:
+      name: workforce_dead_letter
+    load:
+      name: workforce_load
+    load-output:
+      name: workforce_load_output
+    output:
+      name: workforce_output
+  messages-per-request: 10

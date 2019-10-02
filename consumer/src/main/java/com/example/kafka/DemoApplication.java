@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import  org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +22,35 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.service.consumer.IMergeConsumerService;
 import com.example.kafka.service.consumer.IGenericConsumerService;
 
 @SpringBootApplication
 public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
+	}
+
+	// Producer configuration
+	@Bean
+	public Map<String, Object> producerWorkforceChangeRequestConfigs() {
+		Map<String, Object> props = new HashMap<>(_kafkaProperties.buildProducerProperties());
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+		return props;
+	}
+
+	@Bean
+	public ProducerFactory<String, WorkforceChangeRequestData> producerWorkforceChangeRequestFactory() {
+		return new DefaultKafkaProducerFactory<>(producerWorkforceChangeRequestConfigs());
+	}
+
+	@Bean
+	public KafkaTemplate<String, WorkforceChangeRequestData> kafkaWorkforceChangeRequestTemplate() {
+		return new KafkaTemplate<>(producerWorkforceChangeRequestFactory());
 	}
 
 	// Consumer configuration
@@ -108,5 +133,8 @@ public class DemoApplication {
 	private String _groupId;
 
 	@Autowired
-	private IGenericConsumerService _consumerService;
+	private IGenericConsumerService _genericConsumerService;
+
+	@Autowired
+	private IMergeConsumerService _mergeConsumerService;
 }

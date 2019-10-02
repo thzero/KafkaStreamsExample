@@ -27,8 +27,8 @@ import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
 import com.example.kafka.response.service.SaveStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IMergeService;
-import com.example.kafka.service.publish.IPublishService;
-import com.example.kafka.request.publish.PublishRequest;
+import com.example.kafka.service.publish.IWorkforceChangeRequestPublishService;
+import com.example.kafka.request.publish.WorkforceChangeRequestPublishRequest;
 import com.example.kafka.service.IStoreWorkforceService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 
@@ -139,8 +139,8 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
         return response.isSuccess() ? response.data : null;
     }
 
-    protected void publish(String topic, String key, Object value) {
-        _publishService.publish(new PublishRequest(topic, key, value));
+    protected void publish(String topic, String key, WorkforceChangeRequestData value) {
+        _publishService.publish(new WorkforceChangeRequestPublishRequest(topic, key, value));
     }
 
     protected boolean storeWorkforceData(@NotBlank String key, WorkforceData workforce) {
@@ -155,7 +155,7 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
     private IMergeService _mergeService;
 
     @Autowired
-    private IPublishService _publishService;
+    private IWorkforceChangeRequestPublishService _publishService;
 
     @Autowired
     private IStoreWorkforceService _storeService;
