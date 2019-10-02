@@ -1,7 +1,8 @@
 package com.example.kafka.service.processor.merge;
 
-import javax.validation.constraints.NotBlank;
 import java.time.Instant;
+
+import javax.validation.constraints.NotBlank;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +18,17 @@ import com.example.kafka.data.ChangeRequestData;
 import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.data.WorkforceData;
+import com.example.kafka.request.processor.MergeProcessorRequest;
 import com.example.kafka.request.RetrieveStoreWorkforceRequest;
 import com.example.kafka.request.SaveStoreWorkforceRequest;
+import com.example.kafka.response.processor.MergeProcessorResponse;
 import com.example.kafka.response.service.MergeResponse;
 import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
 import com.example.kafka.response.service.SaveStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.IMergeService;
 import com.example.kafka.service.publish.IPublishService;
+import com.example.kafka.request.publish.PublishRequest;
 import com.example.kafka.service.IStoreWorkforceService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 
@@ -32,83 +36,91 @@ import com.example.kafka.service.processor.IMergeProcessorService;
 public class MergeProcessorService extends BaseService implements IMergeProcessorService {
     private static final Logger logger = LoggerFactory.getLogger(MergeProcessorService.class);
 
-    public boolean process(String key, WorkforceChangeRequestData changeRequest) throws Exception {
-        if (changeRequest == null)
-            return false;
-
-        if (StringUtils.isEmpty(changeRequest.getWorkforceRequestId()))
-            return false;
-
+    public MergeProcessorResponse process(@NonNull MergeProcessorRequest request) {
+        MergeProcessorResponse response = new MergeProcessorResponse();
         try {
-            logger.debug("request id '{}'", changeRequest.getWorkforceRequestId());
+            if (StringUtils.isEmpty(request.key))
+                return error(response);
+            if (request.changeRequest == null)
+                return error(response);
+
+            if (StringUtils.isEmpty(request.changeRequest.getWorkforceRequestId()))
+                return error(response);
+
+            logger.debug("request id '{}'", request.changeRequest.getWorkforceRequestId());
 
             WorkforceData workforceData = null;
-            if (changeRequest.changeTypeCd != ChangeTypes.Create) {
+            if (request.changeRequest.changeTypeCd != ChangeTypes.Create) {
                 // Lookup the workforce data
-                workforceData = loadWorkforceData(changeRequest.getWorkforceRequestId());
+                workforceData = loadWorkforceData(request.changeRequest.getWorkforceRequestId());
                 if (workforceData == null) {
-                    logger.warn("workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
-                    return false;
+                    logger.warn("workforce data for request id '{}' was not found!", request.changeRequest.getWorkforceRequestId());
+                    return error(response);
                 }
-                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Found);
-                publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
+                setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Found);
+                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
             }
 
-            logger.debug("workforce data for request id '{}' was found!", changeRequest.getWorkforceRequestId());
+            logger.debug("workforce data for request id '{}' was found!", request.changeRequest.getWorkforceRequestId());
 
             // Merge the data
-            logger.debug("before, key: '{}' | changeRequest: {} | joinedStream: {}", changeRequest.getWorkforceRequestId(), changeRequest.toString(), workforceData.toString());
-            MergeResponse response = getMergeService().merge(changeRequest, workforceData);
-            if (!response.isSuccess()) {
-                logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
+            logger.debug("before, key: '{}' | changeRequest: {} | joinedStream: {}", request.changeRequest.getWorkforceRequestId(), request.changeRequest.toString(), workforceData.toString());
+            MergeResponse mergeResponse = getMergeService().merge(request.changeRequest, workforceData);
+            if (!mergeResponse.isSuccess()) {
+                logger.warn("workforce data for request id '{}' had the following error: {}", request.changeRequest.getWorkforceRequestId(), response.getError());
                 // TODO
                 // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
                 // shutdown the app otherwise forwarding will auto-commit.
                 // Write it to the dead-letter sink
-                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.MergeFailed);
-                publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
-                publish(_appConfig.changeRequestDeadLetterTopic, key, changeRequest);
-                return false;
+                setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.MergeFailed);
+                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+                publish(_appConfig.changeRequestDeadLetterTopic, request.key, request.changeRequest);
+                return error(response);
             }
-            logger.debug("after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
-            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Merged);
-            publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
+            logger.debug("after, key: '{}' | changeRequest: {}", mergeResponse.changeRequest.getWorkforceRequestId(), mergeResponse.changeRequest.toString());
+            setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Merged);
+            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
 
-            boolean result = storeWorkforceData(key, response.changeRequest.snapshot);
+            boolean result = storeWorkforceData(request.key, mergeResponse.changeRequest.snapshot);
             if (!result) {
                 // TODO
                 // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
                 // shutdown the app otherwise forwarding will auto-commit.
-                setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.StoreFailed);
-                publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
-                return false;
+                setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.StoreFailed);
+                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+                return error(response);
             }
-            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Stored);
-            publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
+            setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Stored);
+            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
 
             // Write the transaction to the transaction internal sink
-            publish(_appConfig.changeRequestTransactionInternalTopic, key, changeRequest);
+            publish(_appConfig.changeRequestTransactionInternalTopic, request.key, request.changeRequest);
 
             // Remove the request and snapshot; do not want to send the data when announcing a transaction
-            response.changeRequest.request = null;
-            response.changeRequest.snapshot = null;
+            mergeResponse.changeRequest.request = null;
+            mergeResponse.changeRequest.snapshot = null;
 
             // Write the transaction to the transaction external sink
-            publish(_appConfig.changeRequestTransactionTopic, key, changeRequest);
+            publish(_appConfig.changeRequestTransactionTopic, request.key, mergeResponse.changeRequest);
 
-            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Success);
-            publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
+            setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Success);
+            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
 
-            return true;
+            return response;
         }
         catch (Exception ex) {
             logger.debug(TAG, ex);
-            setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Failed);
-            publish(_appConfig.changeRequestCheckpointTopic, key, changeRequest);
-            publish(_appConfig.changeRequestDeadLetterTopic, key, changeRequest);
-
-            throw ex;
+            try {
+                setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Failed);
+                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+                publish(_appConfig.changeRequestDeadLetterTopic, request.key, request.changeRequest);
+            }
+            catch (Exception ex2) {
+                logger.debug(TAG, ex);
+            }
         }
+
+        return error(response);
     }
 
     protected void setProcessedStatus(@NonNull WorkforceChangeRequestData changeRequest, ChangeRequestData.ProcessStatus status) {
@@ -128,7 +140,7 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
     }
 
     protected void publish(String topic, String key, Object value) {
-        _publishService.publish(topic, key, value);
+        _publishService.publish(new PublishRequest(topic, key, value));
     }
 
     protected boolean storeWorkforceData(@NotBlank String key, WorkforceData workforce) {

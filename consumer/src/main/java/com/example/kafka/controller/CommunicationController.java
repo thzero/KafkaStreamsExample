@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import com.example.kafka.request.communication.GreetingCommunicationRequest;
 import com.example.kafka.service.communication.ICommunicationService;
 
 @Controller
@@ -15,7 +16,7 @@ public class CommunicationController {
 
     @MessageMapping("/greetings")
     public void greet(String greeting) {
-        _communicationService.greet(greeting);
+        _communicationService.greet(new GreetingCommunicationRequest(greeting));
     }
 
     @Autowired

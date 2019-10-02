@@ -38,6 +38,14 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
     @Override
     public void process(String key, WorkforceChangeRequestData changeRequest) {
+        if (StringUtils.isEmpty(key)) {
+            // TODO
+            // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+            // shutdown the app otherwise forwarding will auto-commit.
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
+            context().commit();
+            return;
+        }
         if (changeRequest == null) {
             // TODO
             // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
@@ -81,9 +89,9 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
             // Merge the data
             logger.debug("before, key: '{}' | changeRequest: {} | joinedStream: {}", changeRequest.getWorkforceRequestId(), changeRequest.toString(), workforceData.toString());
-            MergeResponse response = getMergeService().merge(changeRequest, workforceData);
-            if (!response.isSuccess()) {
-                logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
+            MergeResponse mergeResponse = getMergeService().merge(changeRequest, workforceData);
+            if (!mergeResponse.isSuccess()) {
+                logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), mergeResponse.getError());
                 // TODO
                 // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
                 // shutdown the app otherwise forwarding will auto-commit.
@@ -94,11 +102,11 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
                 context().commit();
                 return;
             }
-            logger.debug("after, key: '{}' | changeRequest: {}", response.changeRequest.getWorkforceRequestId(), response.changeRequest.toString());
+            logger.debug("after, key: '{}' | changeRequest: {}", mergeResponse.changeRequest.getWorkforceRequestId(), mergeResponse.changeRequest.toString());
             setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Merged);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
-            boolean result = storeWorkforceData(key, response.changeRequest.snapshot);
+            boolean result = storeWorkforceData(key, mergeResponse.changeRequest.snapshot);
             if (!result) {
                 // TODO
                 // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
@@ -111,14 +119,14 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
 
             // Write the transaction to the transaction internal sink
-            context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransactionInternal));
+            context().forward(key, mergeResponse.changeRequest, To.child(KeySinkWorkforceTransactionInternal));
 
             // Remove the request and snapshot; do not want to send the data when announcing a transaction
-            response.changeRequest.request = null;
-            response.changeRequest.snapshot = null;
+            mergeResponse.changeRequest.request = null;
+            mergeResponse.changeRequest.snapshot = null;
 
             // Write the transaction to the transaction external sink
-            context().forward(key, response.changeRequest, To.child(KeySinkWorkforceTransaction));
+            context().forward(key, mergeResponse.changeRequest, To.child(KeySinkWorkforceTransaction));
 
             setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Success);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));

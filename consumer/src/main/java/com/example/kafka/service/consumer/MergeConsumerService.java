@@ -13,19 +13,26 @@ import org.springframework.stereotype.Service;
 
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.request.processor.MergeProcessorRequest;
+import com.example.kafka.response.processor.MergeProcessorResponse;
+import com.example.kafka.service.BaseService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 
 @Service
-public class MergeConsumerService implements IMergeConsumerService {
+public class MergeConsumerService extends BaseService implements IMergeConsumerService {
     private static final Logger logger = LoggerFactory.getLogger(MergeConsumerService.class);
 
     @KafkaListener(topics = "${workforce.topics.change-request.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
-    public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+    public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) {
         logger.debug("listenAsObjectCheckpoint received key {}: Payload: {} | Record: {}", cr.key(), payload, cr.toString());
 
         try {
-            if (_processService.process(cr.key(), payload))
+            MergeProcessorResponse response = _processService.process(new MergeProcessorRequest(cr.key(), payload));
+            if (!response.isSuccess()) {
+                if (response.getError() != null)
+                    logger.error(response.getError().message);
                 return;
+            }
 
             ack.acknowledge();
         }
