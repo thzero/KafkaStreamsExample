@@ -16,10 +16,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
-import com.example.kafka.service.communication.ICommunicationService;
 
 @Service
-public class ConsumerService implements IConsumerService {
+public class ConsumerService extends BaseService implements IConsumerService {
     private static final Logger logger = LoggerFactory.getLogger(ConsumerService.class);
 
 //    @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "json", containerFactory = "kafkaListenerContainerFactory")
@@ -53,6 +52,7 @@ public class ConsumerService implements IConsumerService {
         ack.acknowledge();
 
         _storeService.saveTransactionInternal(new SaveExternalStoreWorkforceRequest(payload));
+        _communicationService.transaction(cr.key(), payload);
     }
 
     @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
@@ -60,6 +60,7 @@ public class ConsumerService implements IConsumerService {
         logger.debug("listenAsStringTransaction received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();
 
+        _communicationService.transaction(cr.key(), payload);
         _communicationService.transaction(cr.key(), payload);
     }
 

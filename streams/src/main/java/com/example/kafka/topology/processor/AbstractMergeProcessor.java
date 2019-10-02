@@ -39,10 +39,18 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
     @Override
     public void process(String key, WorkforceChangeRequestData changeRequest) {
         if (changeRequest == null) {
+            // TODO
+            // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+            // shutdown the app otherwise forwarding will auto-commit.
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
             context().commit();
             return;
         }
         if (StringUtils.isEmpty(changeRequest.getWorkforceRequestId())) {
+            // TODO
+            // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+            // shutdown the app otherwise forwarding will auto-commit.
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
             context().commit();
             return;
         }
@@ -56,6 +64,9 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
                 workforceData = loadWorkforceData(changeRequest.getWorkforceRequestId());
                 if (workforceData == null) {
                     logger.warn("workforce data for request id '{}' was not found!", changeRequest.getWorkforceRequestId());
+                    // TODO
+                    // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+                    // shutdown the app otherwise forwarding will auto-commit.
                     // Write it to the dead-letter sink
                     setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.NotFound);
                     context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
@@ -73,6 +84,9 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
             MergeResponse response = getMergeService().merge(changeRequest, workforceData);
             if (!response.isSuccess()) {
                 logger.warn("workforce data for request id '{}' had the following error: {}", changeRequest.getWorkforceRequestId(), response.getError());
+                // TODO
+                // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+                // shutdown the app otherwise forwarding will auto-commit.
                 // Write it to the dead-letter sink
                 setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.MergeFailed);
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
@@ -86,6 +100,9 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
 
             boolean result = storeWorkforceData(key, response.changeRequest.snapshot);
             if (!result) {
+                // TODO
+                // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+                // shutdown the app otherwise forwarding will auto-commit.
                 setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.StoreFailed);
                 context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
                 return;
@@ -110,8 +127,12 @@ public abstract class AbstractMergeProcessor extends AbstractProcessor<String, W
         }
         catch (Exception ex) {
             logger.debug(TAG, ex);
+            // TODO
+            // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
+            // shutdown the app otherwise forwarding will auto-commit.
             setProcessedStatus(changeRequest, ChangeRequestData.ProcessStatus.Failed);
             context().forward(key, changeRequest, To.child(KeySinkWorkforceCheckpoint));
+            context().forward(key, changeRequest, To.child(KeySinkWorkforceDeadLetter));
             context().commit();
         }
     }

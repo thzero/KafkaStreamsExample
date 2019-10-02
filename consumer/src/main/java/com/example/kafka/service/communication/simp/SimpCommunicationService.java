@@ -1,9 +1,9 @@
-package com.example.kafka.service.communication;
+package com.example.kafka.service.communication.simp;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-import com.example.kafka.DateUtils;
+import com.example.kafka.service.ICommunicationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,11 +16,13 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.kafka.DateUtils;
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.service.BaseService;
 
 @Service
-public class CommunicationService implements ICommunicationService {
-    private static final Logger logger = LoggerFactory.getLogger(CommunicationService.class);
+public class SimpCommunicationService extends BaseService implements ICommunicationService {
+    private static final Logger logger = LoggerFactory.getLogger(SimpCommunicationService.class);
 
     public void greet(String greeting) {
         logger.debug("Greeting for {}", greeting);

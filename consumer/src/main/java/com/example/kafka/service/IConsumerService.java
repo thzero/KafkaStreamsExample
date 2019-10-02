@@ -1,4 +1,4 @@
 package com.example.kafka.service;
 
-public interface IConsumerService {
+public interface IConsumerService extends IService {
 }
