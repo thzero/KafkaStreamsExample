@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import com.example.kafka.service.IMergeService;
+import com.example.kafka.service.merge.IMergeService;
 import com.example.kafka.topology.WorkforceStreamsBuilderTopology;
 
 @Component("advancedUpdateWorkforceTopology")

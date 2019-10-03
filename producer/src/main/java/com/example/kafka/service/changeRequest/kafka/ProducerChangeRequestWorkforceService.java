@@ -14,10 +14,10 @@ import com.example.kafka.DateUtils;
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.response.ISuccessResponse;
-import com.example.kafka.response.UpdateProducerResponse;
+import com.example.kafka.response.changeRequest.UpdateProducerResponse;
 import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IMergeService;
 import com.example.kafka.service.changeRequest.IProducerChangeRequestWorkforceService;
+import com.example.kafka.service.merge.IMergeService;
 
 @Service
 public class ProducerChangeRequestWorkforceService extends BaseService implements IProducerChangeRequestWorkforceService {

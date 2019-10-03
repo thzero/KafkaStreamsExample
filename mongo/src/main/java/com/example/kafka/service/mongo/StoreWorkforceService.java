@@ -12,10 +12,10 @@ import org.springframework.util.StringUtils;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.request.RetrieveStoreWorkforceRequest;
 import com.example.kafka.request.SaveStoreWorkforceRequest;
-import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
-import com.example.kafka.response.service.SaveStoreWorkforceResponse;
+import com.example.kafka.response.store.RetrieveStoreWorkforceResponse;
+import com.example.kafka.response.store.SaveStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IStoreWorkforceService;
+import com.example.kafka.service.store.IStoreWorkforceService;
 
 @Component
 public class StoreWorkforceService extends BaseService implements IStoreWorkforceService {

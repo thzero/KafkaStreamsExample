@@ -18,8 +18,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.example.kafka.data.*;
-import com.example.kafka.response.service.MergeResponse;
-import com.example.kafka.service.IMergeService;
+import com.example.kafka.response.merge.MergeResponse;
+import com.example.kafka.service.merge.IMergeService;
 import com.example.kafka.topology.WorkforceStreamsBuilderTopology;
 
 @Component("advancedGlobalKTableWorkforceTopology")

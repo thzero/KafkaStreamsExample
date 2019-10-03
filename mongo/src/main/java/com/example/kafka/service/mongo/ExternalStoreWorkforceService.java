@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
-import com.example.kafka.response.service.SaveExternalStoreWorkforceResponse;
+import com.example.kafka.response.store.SaveExternalStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IExternalStoreWorkforceService;
+import com.example.kafka.service.store.IExternalStoreWorkforceService;
 
 @Component
 public class ExternalStoreWorkforceService extends BaseService implements IExternalStoreWorkforceService {

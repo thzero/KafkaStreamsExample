@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import javax.validation.constraints.NotBlank;
 
+import com.example.kafka.response.processor.MergeProcessorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +22,15 @@ import com.example.kafka.data.WorkforceData;
 import com.example.kafka.request.processor.MergeProcessorRequest;
 import com.example.kafka.request.RetrieveStoreWorkforceRequest;
 import com.example.kafka.request.SaveStoreWorkforceRequest;
-import com.example.kafka.response.processor.MergeProcessorResponse;
-import com.example.kafka.response.service.MergeResponse;
-import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
-import com.example.kafka.response.service.SaveStoreWorkforceResponse;
-import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IMergeService;
-import com.example.kafka.service.publish.IWorkforceChangeRequestPublishService;
 import com.example.kafka.request.publish.WorkforceChangeRequestPublishRequest;
-import com.example.kafka.service.IStoreWorkforceService;
+import com.example.kafka.response.merge.MergeResponse;
+import com.example.kafka.response.store.RetrieveStoreWorkforceResponse;
+import com.example.kafka.response.store.SaveStoreWorkforceResponse;
+import com.example.kafka.service.BaseService;
+import com.example.kafka.service.merge.IMergeService;
+import com.example.kafka.service.publish.IWorkforceChangeRequestPublishService;
 import com.example.kafka.service.processor.IMergeProcessorService;
+import com.example.kafka.service.store.IStoreWorkforceService;
 
 @Service
 public class MergeProcessorService extends BaseService implements IMergeProcessorService {

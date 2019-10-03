@@ -15,12 +15,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
+import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
 import com.example.kafka.request.communication.StringTransactionCommunicationRequest;
 import com.example.kafka.request.communication.WorkforceChangeRequestTransactionCommunicationRequest;
 import com.example.kafka.service.BaseService;
-import com.example.kafka.service.IExternalStoreWorkforceService;
 import com.example.kafka.service.communication.ICommunicationService;
-import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
+import com.example.kafka.service.store.IExternalStoreWorkforceService;
 
 @Service
 public class GenericConsumerService extends BaseService implements IGenericConsumerService {

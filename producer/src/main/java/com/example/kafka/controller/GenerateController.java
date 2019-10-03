@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.kafka.response.GenerateProducerResponse;
+import com.example.kafka.response.generate.GenerateProducerResponse;
 import com.example.kafka.service.generate.kafka.ProducerGenerateWorkforceService;
 
 @RestController

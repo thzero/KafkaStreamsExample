@@ -10,10 +10,10 @@ import org.springframework.lang.NonNull;
 import com.example.kafka.data.WorkforceData;
 import com.example.kafka.request.RetrieveStoreWorkforceRequest;
 import com.example.kafka.request.SaveStoreWorkforceRequest;
-import com.example.kafka.response.service.RetrieveStoreWorkforceResponse;
-import com.example.kafka.response.service.SaveStoreWorkforceResponse;
-import com.example.kafka.service.IMergeService;
-import com.example.kafka.service.IStoreWorkforceService;
+import com.example.kafka.response.store.RetrieveStoreWorkforceResponse;
+import com.example.kafka.response.store.SaveStoreWorkforceResponse;
+import com.example.kafka.service.merge.IMergeService;
+import com.example.kafka.service.store.IStoreWorkforceService;
 import com.example.kafka.topology.processor.AbstractMergeProcessor;
 
 public class ExternalMergeProcessor extends AbstractMergeProcessor {

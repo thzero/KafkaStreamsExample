@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.ProviderWorkforceData;
-import com.example.kafka.response.GenerateProducerResponse;
+import com.example.kafka.response.generate.GenerateProducerResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.CsvToJson;
 import com.example.kafka.service.generate.IProducerGenerateWorkforceService;

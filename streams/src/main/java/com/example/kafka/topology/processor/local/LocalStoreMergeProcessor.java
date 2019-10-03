@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 
 import com.example.kafka.data.WorkforceData;
-import com.example.kafka.service.IMergeService;
+import com.example.kafka.service.merge.IMergeService;
 import com.example.kafka.topology.processor.AbstractMergeProcessor;
 
 public class LocalStoreMergeProcessor extends AbstractMergeProcessor {

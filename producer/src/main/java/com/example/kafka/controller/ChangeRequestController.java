@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.kafka.request.ChangeRequest;
-import com.example.kafka.response.UpdateProducerResponse;
+import com.example.kafka.response.changeRequest.UpdateProducerResponse;
 import com.example.kafka.service.changeRequest.IProducerChangeRequestWorkforceService;
 
 @RestController

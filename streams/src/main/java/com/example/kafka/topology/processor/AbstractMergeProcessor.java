@@ -18,8 +18,8 @@ import org.springframework.util.StringUtils;
 
 import com.example.kafka.DateUtils;
 import com.example.kafka.data.*;
-import com.example.kafka.response.service.MergeResponse;
-import com.example.kafka.service.IMergeService;
+import com.example.kafka.response.merge.MergeResponse;
+import com.example.kafka.service.merge.IMergeService;
 
 public abstract class AbstractMergeProcessor extends AbstractProcessor<String, WorkforceChangeRequestData> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMergeProcessor.class);
