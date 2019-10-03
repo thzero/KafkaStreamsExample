@@ -36,8 +36,8 @@ public class ExternalStoreWorkforceService extends BaseService implements IExter
     }
 
     @Override
-    public SaveExternalStoreWorkforceResponse saveTransactionInternal(@NonNull SaveExternalStoreWorkforceRequest request) {
-        return save(request, CollectionNameTransactionInternal);
+    public SaveExternalStoreWorkforceResponse saveTransactionRedacted(@NonNull SaveExternalStoreWorkforceRequest request) {
+        return save(request, CollectionNameTransactionRedacted);
     }
 
     private SaveExternalStoreWorkforceResponse save(@NonNull SaveExternalStoreWorkforceRequest request, @NonNull @NotBlank String collectionName) {
@@ -68,7 +68,7 @@ public class ExternalStoreWorkforceService extends BaseService implements IExter
     private static final String CollectionNameCheckpoint = "changeRequestCheckpoint";
     private static final String CollectionNameOutput = "changeRequestOutput";
     private static final String CollectionNameTransaction = "changeRequestTransaction";
-    private static final String CollectionNameTransactionInternal = "changeRequestTransactionInternal";
+    private static final String CollectionNameTransactionRedacted = "changeRequestTransactionRedacted";
 
     private static final String TAG = ExternalStoreWorkforceService.class.getName();
 }

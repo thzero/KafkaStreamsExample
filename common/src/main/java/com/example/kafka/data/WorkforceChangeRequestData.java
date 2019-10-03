@@ -12,12 +12,7 @@ public class WorkforceChangeRequestData extends ChangeRequestData<WorkforceData>
     }
     public WorkforceChangeRequestData(@NonNull @NotBlank String id, @NonNull WorkforceChangeRequestData change, SplitTypes splitType) {
         super(id, change, splitType);
-        this.request = change.request;
         this.snapshot = change.snapshot;
-        this.processDate = change.processDate;
-        this.processTimestamp = change.processTimestamp;
-        this.requestedDate = change.requestedDate;
-        this.requestedTimestamp = change.requestedTimestamp;
     }
 
     @Override

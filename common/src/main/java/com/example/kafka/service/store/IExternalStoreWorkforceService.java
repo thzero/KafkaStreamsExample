@@ -9,5 +9,5 @@ public interface IExternalStoreWorkforceService {
     SaveExternalStoreWorkforceResponse saveCheckpoint(@NonNull SaveExternalStoreWorkforceRequest request);
     SaveExternalStoreWorkforceResponse saveOutput(@NonNull SaveExternalStoreWorkforceRequest request);
     SaveExternalStoreWorkforceResponse saveTransaction(@NonNull SaveExternalStoreWorkforceRequest request);
-    SaveExternalStoreWorkforceResponse saveTransactionInternal(@NonNull SaveExternalStoreWorkforceRequest request);
+    SaveExternalStoreWorkforceResponse saveTransactionRedacted(@NonNull SaveExternalStoreWorkforceRequest request);
 }

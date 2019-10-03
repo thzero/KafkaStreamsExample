@@ -118,14 +118,14 @@ public class GlobalKTableWorkforceTopology extends WorkforceStreamsBuilderTopolo
 
         // Write the transaction data to the transaction topic.
         partitionedOutputStream[0]
-                .through(appConfig.changeRequestTransactionInternalTopic, Produced.with(stringSerde, workforceChangeRequestSerde))
+                .through(appConfig.changeRequestTransactionTopic, Produced.with(stringSerde, workforceChangeRequestSerde))
                 .map((KeyValueMapper<String, WorkforceChangeRequestData, KeyValue<String, WorkforceChangeRequestData>>) (key, value) -> {
                     // Remove the request and snapshot; do not want to send the data when announcing a transaction
                     value.request = null;
                     value.snapshot = null;
                     return new KeyValue<>(key, value);
                 })
-                .to(appConfig.changeRequestTransactionTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
+                .to(appConfig.changeRequestTransactionRedactedTopic, Produced.with(stringSerde, workforceChangeRequestSerde));
 
         // Map down to the workforce data only and provide that to the output topic.
         KStream<String, WorkforceData> outputStream =

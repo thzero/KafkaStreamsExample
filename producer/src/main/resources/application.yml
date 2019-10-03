@@ -24,8 +24,8 @@ workforce:
       name: workforce_change_request_output
     change-request-transaction:
       name: workforce_change_request_transaction
-    change-request-transaction-internal:
-      name: workforce_change_request_transaction_internal
+    change-request-transaction-redacted:
+      name: workforce_change_request_transaction_redacted
     dead-letter:
       name: workforce_dead_letter
     load:

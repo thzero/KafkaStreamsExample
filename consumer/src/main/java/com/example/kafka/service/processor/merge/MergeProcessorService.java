@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import javax.validation.constraints.NotBlank;
 
-import com.example.kafka.response.processor.MergeProcessorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +23,7 @@ import com.example.kafka.request.RetrieveStoreWorkforceRequest;
 import com.example.kafka.request.SaveStoreWorkforceRequest;
 import com.example.kafka.request.publish.WorkforceChangeRequestPublishRequest;
 import com.example.kafka.response.merge.MergeResponse;
+import com.example.kafka.response.processor.MergeProcessorResponse;
 import com.example.kafka.response.store.RetrieveStoreWorkforceResponse;
 import com.example.kafka.response.store.SaveStoreWorkforceResponse;
 import com.example.kafka.service.BaseService;
@@ -93,15 +93,16 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
             setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Stored);
             publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
 
-            // Write the transaction to the transaction internal sink
-            publish(_appConfig.changeRequestTransactionInternalTopic, request.key, request.changeRequest);
+            // Write the transaction to the transaction sink
+            publish(_appConfig.changeRequestTransactionTopic, request.key, request.changeRequest);
 
             // Remove the request and snapshot; do not want to send the data when announcing a transaction
+            mergeResponse.changeRequest.redacted = true;
             mergeResponse.changeRequest.request = null;
             mergeResponse.changeRequest.snapshot = null;
 
-            // Write the transaction to the transaction external sink
-            publish(_appConfig.changeRequestTransactionTopic, request.key, mergeResponse.changeRequest);
+            // Write the transaction to the transaction redacted sink
+            publish(_appConfig.changeRequestTransactionRedactedTopic, request.key, mergeResponse.changeRequest);
 
             setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Success);
             publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);

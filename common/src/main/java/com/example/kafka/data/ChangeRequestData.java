@@ -24,7 +24,12 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
         this.changeSubTypeCd = changeRequest.changeSubTypeCd;
         this.changeTypeCd = changeRequest.changeTypeCd;
         this.index = changeRequest.index;
+        this.processDate = changeRequest.processDate;
+        this.processTimestamp = changeRequest.processTimestamp;
+        this.redacted = changeRequest.redacted;
         this.request = changeRequest.request;
+        this.requestedDate = changeRequest.requestedDate;
+        this.requestedTimestamp = changeRequest.requestedTimestamp;
         this.splitType = splitType;
     }
 
@@ -46,6 +51,7 @@ public abstract class ChangeRequestData<T extends IdData> extends IdData {
     public Date processDate;
     public ProcessStatus processStatus = ProcessStatus.Initial;
     public long processTimestamp;
+    public boolean redacted;
     public Date requestedDate;
     public long requestedTimestamp;
     public Status status = Status.Initial;

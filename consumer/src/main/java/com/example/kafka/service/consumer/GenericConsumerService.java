@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.request.SaveExternalStoreWorkforceRequest;
-import com.example.kafka.request.communication.StringTransactionCommunicationRequest;
 import com.example.kafka.request.communication.WorkforceChangeRequestTransactionCommunicationRequest;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.communication.ICommunicationService;
@@ -36,7 +35,7 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
 //    }
 
     @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectTest(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+    public void listenAsObjectCheckpoint(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsObjectCheckpoint received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
 
         ack.acknowledge();
@@ -52,21 +51,21 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
         _storeService.saveOutput(new SaveExternalStoreWorkforceRequest(payload));
     }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-transaction-internal.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectTransactionInternal(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
-        logger.debug("listenAsObjectTransactionInternal received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
-        ack.acknowledge();
-
-        _storeService.saveTransactionInternal(new SaveExternalStoreWorkforceRequest(payload));
-        _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
-    }
-
-    @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerStringContainerFactory")
-    public void listenAsStringTransaction(ConsumerRecord<String, String> cr,  @Payload String payload, Acknowledgment ack) throws Exception {
+    @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
+    public void listenAsObjectTransaction(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsStringTransaction received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();
 
-        _communicationService.transaction(new StringTransactionCommunicationRequest(cr.key(), payload));
+        _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
+    }
+
+    @KafkaListener(topics = "${workforce.topics.change-request-transaction-redacted.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
+    public void listenAsObjectTransactionRedacted(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+        logger.debug("listenAsObjectTransactionRedacted received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+        ack.acknowledge();
+
+        _storeService.saveTransactionRedacted(new SaveExternalStoreWorkforceRequest(payload));
+        _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
     }
 
 //    @KafkaListener(topics = "${workforce.topics.topic-output.name}", clientIdPrefix = "bytearray", containerFactory = "kafkaListenerByteArrayContainerFactory")

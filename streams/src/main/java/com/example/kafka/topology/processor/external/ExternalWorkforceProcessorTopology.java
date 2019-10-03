@@ -27,7 +27,7 @@ public class ExternalWorkforceProcessorTopology extends WorkforceProcessorTopolo
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceCheckpoint, appConfig.changeRequestCheckpointTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceDeadLetter, appConfig.changeRequestDeadLetterTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
                 .addSink(ExternalMergeProcessor.KeySinkWorkforceTransaction, appConfig.changeRequestTransactionTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG)
-                .addSink(ExternalMergeProcessor.KeySinkWorkforceTransactionInternal, appConfig.changeRequestTransactionInternalTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG);
+                .addSink(ExternalMergeProcessor.KeySinkWorkforceTransactionRedacted, appConfig.changeRequestTransactionRedactedTopic, stringSerde.serializer(), workforceChangeRequestSerde.serializer(), ExternalMergeProcessor.TAG);
     }
 
     @Autowired
