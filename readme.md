@@ -29,7 +29,7 @@ docker run -e ADV_HOST=127.0.0.1 -e EULA="<replace with your key>" --rm -p  3030
 
 ### Wurstmeister
 
-Also used the wurstmeister docker images with docker-compose.yml below
+Also used the wurstmeister docker images with docker-compose.yml (instance\docker-compose.yml):
 
 ```
 version: '2.4'
