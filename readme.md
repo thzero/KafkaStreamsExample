@@ -19,7 +19,7 @@ The demo is made up of five projects:
 
 https://textik.com/#e5be2591094473ff
 
-                                                                                                                                          
+<pre>
 +------------------------------------------+                 +--------------------------+                                                 
 |     Kafka Streams                        |                 |                          |                                                 
 |                                          |                 | kafka producer web api   |                                                 
@@ -56,8 +56,7 @@ https://textik.com/#e5be2591094473ff
                                                                                     +----------|----------+                               
                                                                                     |   end client        |                               
                                                           -                         |                     |                               
-                                                                                    +---------------------+                               
-                                                                                                                               
+                                                                                    +---------------------+                             </pre>                                            
 
 # Running
 
