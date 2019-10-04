@@ -24,8 +24,6 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.example.kafka.data.WorkforceChangeRequestData;
-import com.example.kafka.service.consumer.IMergeConsumerService;
-import com.example.kafka.service.consumer.IGenericConsumerService;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -67,15 +65,15 @@ public class DemoApplication {
 
 	// Object Serializer Consumer Configuration
 	@Bean
-	public ConsumerFactory<String, Object> consumerFactory() {
-		final JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
+	public ConsumerFactory<String, WorkforceChangeRequestData> consumerFactory() {
+		final JsonDeserializer<WorkforceChangeRequestData> jsonDeserializer = new JsonDeserializer<>();
 		jsonDeserializer.addTrustedPackages("*");
-		return new DefaultKafkaConsumerFactory<>(_kafkaProperties.buildConsumerProperties(), new StringDeserializer(), jsonDeserializer);
+		return new DefaultKafkaConsumerFactory<>(_kafkaProperties.buildConsumerProperties(), new StringDeserializer(), SerdeUtils.generateWorkforceChangeRequest().deserializer());
 	}
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-		ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+	public ConcurrentKafkaListenerContainerFactory<String, WorkforceChangeRequestData> kafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, WorkforceChangeRequestData> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 //		factory.getContainerProperties().setAckOnError(false);
 //		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
@@ -130,10 +128,4 @@ public class DemoApplication {
 
 	@Value("${application.change-request.group-id}")
 	private String _groupId;
-
-	@Autowired
-	private IGenericConsumerService _genericConsumerService;
-
-	@Autowired
-	private IMergeConsumerService _mergeConsumerService;
 }

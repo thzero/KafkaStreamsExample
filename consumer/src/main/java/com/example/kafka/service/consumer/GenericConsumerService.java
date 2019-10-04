@@ -34,33 +34,34 @@ public class GenericConsumerService extends BaseService implements IGenericConsu
 //        _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
 //    }
 
-    @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectCheckpoint(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
-        logger.debug("listenAsObjectCheckpoint received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
-
-        ack.acknowledge();
-
-        _storeService.saveCheckpoint(new SaveExternalStoreWorkforceRequest(payload));
-    }
-
-    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectOutput(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
-        logger.debug("listenAsObjectOutput received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
-        ack.acknowledge();
-
-        _storeService.saveOutput(new SaveExternalStoreWorkforceRequest(payload));
-    }
+//    @KafkaListener(topics = "${workforce.topics.change-request-checkpoint.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
+//    public void listenAsObjectCheckpoint(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+//        logger.debug("listenAsObjectCheckpoint received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+//
+//        ack.acknowledge();
+//
+//        _storeService.saveCheckpoint(new SaveExternalStoreWorkforceRequest(payload));
+//    }
+//
+//    @KafkaListener(topics = "${workforce.topics.change-request-output.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
+//    public void listenAsObjectOutput(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+//        logger.debug("listenAsObjectOutput received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+//        ack.acknowledge();
+//
+//        _storeService.saveOutput(new SaveExternalStoreWorkforceRequest(payload));
+//    }
 
     @KafkaListener(topics = "${workforce.topics.change-request-transaction.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectTransaction(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
-        logger.debug("listenAsStringTransaction received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
+    public void listenAsObjectTransaction(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+        logger.debug("listenAsObjectTransaction received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();
 
+        _storeService.saveTransaction(new SaveExternalStoreWorkforceRequest(payload));
         _communicationService.transaction(new WorkforceChangeRequestTransactionCommunicationRequest(cr.key(), payload));
     }
 
     @KafkaListener(topics = "${workforce.topics.change-request-transaction-redacted.name}", clientIdPrefix = "string", containerFactory = "kafkaListenerContainerFactory")
-    public void listenAsObjectTransactionRedacted(ConsumerRecord<String, WorkforceChangeRequestData> cr,  @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
+    public void listenAsObjectTransactionRedacted(ConsumerRecord<String, WorkforceChangeRequestData> cr, @Payload WorkforceChangeRequestData payload, Acknowledgment ack) throws Exception {
         logger.debug("listenAsObjectTransactionRedacted received key {}: Type [{}] | Payload: {} | Record: {}", cr.key(), typeIdHeader(cr.headers()), payload, cr.toString());
         ack.acknowledge();
 

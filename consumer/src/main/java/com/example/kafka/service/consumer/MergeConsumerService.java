@@ -11,14 +11,13 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.WorkforceChangeRequestData;
 import com.example.kafka.request.processor.MergeProcessorRequest;
 import com.example.kafka.response.processor.MergeProcessorResponse;
 import com.example.kafka.service.BaseService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 
-@Service
+//@Service
 public class MergeConsumerService extends BaseService implements IMergeConsumerService {
     private static final Logger logger = LoggerFactory.getLogger(MergeConsumerService.class);
 
@@ -40,9 +39,6 @@ public class MergeConsumerService extends BaseService implements IMergeConsumerS
             logger.debug(TAG, ex);
         }
     }
-
-    @Autowired
-    private AppConfig _appConfig;
 
     @Autowired
     private IMergeProcessorService _processService;

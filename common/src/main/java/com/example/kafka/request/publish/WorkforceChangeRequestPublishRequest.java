@@ -9,13 +9,20 @@ import com.example.kafka.request.BaseRequest;
 
 public class WorkforceChangeRequestPublishRequest extends BaseRequest {
     public WorkforceChangeRequestPublishRequest() {}
-    public WorkforceChangeRequestPublishRequest(@NonNull @NotBlank String topic, @NonNull @NotBlank String key, @NonNull @NotBlank WorkforceChangeRequestData value) {
+    public WorkforceChangeRequestPublishRequest(@NonNull @NotBlank Topics topic, @NonNull @NotBlank String key, @NonNull @NotBlank WorkforceChangeRequestData value) {
         this.topic = topic;
         this.key = key;
         this.value = value;
     }
 
-    public String topic;
     public String key;
+    public Topics topic;
     public WorkforceChangeRequestData value;
+
+    public enum Topics {
+        Checkpoint,
+        DeadLetter,
+        Transaction,
+        TransactionRedacted
+    }
 }

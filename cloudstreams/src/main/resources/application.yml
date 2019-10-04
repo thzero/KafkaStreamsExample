@@ -1,0 +1,35 @@
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+        bindings:
+          workforce_change_request:
+            destination: workforce_change_request
+            group: workforce.v1
+            consumer:
+#              startOffset: earliest
+              autoCommitOnError: false
+              autoCommitOffset: false
+#              max-attempts: 2147483647
+#              backOffInitialInterval: 1000
+#              backOffMaxInterval: 300000
+#              backOffMultiplier: 2.0
+          workforce_change_request_checkpoint:
+            destination: workforce_change_request_checkpoint
+          workforce_change_request_dead_letter:
+            destination: workforce_change_request_dead_letter
+          workforce_change_request_transaction:
+            destination: workforce_change_request_transaction
+          workforce_change_request_transaction_redacted:
+            destination: workforce_change_request_transaction_redacted
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %class{36}.%M - %msg%n"
+  level:
+    com.example.kafka: DEBUG
+
+server:
+  port: 0

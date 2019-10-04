@@ -1,0 +1,6 @@
+rootProject.name = 'cloudstreams'
+
+include ':common'
+include ':mongo'
+project(':common').projectDir = file("../common")
+project(':mongo').projectDir = file("../mongo")

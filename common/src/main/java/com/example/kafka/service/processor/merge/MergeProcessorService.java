@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.kafka.DateUtils;
-import com.example.kafka.config.AppConfig;
 import com.example.kafka.data.ChangeRequestData;
 import com.example.kafka.data.ChangeTypes;
 import com.example.kafka.data.WorkforceChangeRequestData;
@@ -32,8 +30,7 @@ import com.example.kafka.service.publish.IWorkforceChangeRequestPublishService;
 import com.example.kafka.service.processor.IMergeProcessorService;
 import com.example.kafka.service.store.IStoreWorkforceService;
 
-@Service
-public class MergeProcessorService extends BaseService implements IMergeProcessorService {
+public abstract class MergeProcessorService extends BaseService implements IMergeProcessorService {
     private static final Logger logger = LoggerFactory.getLogger(MergeProcessorService.class);
 
     public MergeProcessorResponse process(@NonNull MergeProcessorRequest request) {
@@ -58,7 +55,7 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
                     return error(response);
                 }
                 setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Found);
-                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
             }
 
             logger.debug("workforce data for request id '{}' was found!", request.changeRequest.getWorkforceRequestId());
@@ -73,13 +70,13 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
                 // shutdown the app otherwise forwarding will auto-commit.
                 // Write it to the dead-letter sink
                 setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.MergeFailed);
-                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
-                publish(_appConfig.changeRequestDeadLetterTopic, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.DeadLetter, request.key, request.changeRequest);
                 return error(response);
             }
             logger.debug("after, key: '{}' | changeRequest: {}", mergeResponse.changeRequest.getWorkforceRequestId(), mergeResponse.changeRequest.toString());
             setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Merged);
-            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+            publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
 
             boolean result = storeWorkforceData(request.key, mergeResponse.changeRequest.snapshot);
             if (!result) {
@@ -87,14 +84,14 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
                 // Should we throw an exception here?  That would cause an unhandled exception, which is caught the handler, and
                 // shutdown the app otherwise forwarding will auto-commit.
                 setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.StoreFailed);
-                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
                 return error(response);
             }
             setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Stored);
-            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+            publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
 
             // Write the transaction to the transaction sink
-            publish(_appConfig.changeRequestTransactionTopic, request.key, request.changeRequest);
+            publish(WorkforceChangeRequestPublishRequest.Topics.Transaction, request.key, request.changeRequest);
 
             // Remove the request and snapshot; do not want to send the data when announcing a transaction
             mergeResponse.changeRequest.redacted = true;
@@ -102,10 +99,10 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
             mergeResponse.changeRequest.snapshot = null;
 
             // Write the transaction to the transaction redacted sink
-            publish(_appConfig.changeRequestTransactionRedactedTopic, request.key, mergeResponse.changeRequest);
+            publish(WorkforceChangeRequestPublishRequest.Topics.TransactionRedacted, request.key, mergeResponse.changeRequest);
 
             setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Success);
-            publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
+            publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
 
             return response;
         }
@@ -113,8 +110,8 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
             logger.debug(TAG, ex);
             try {
                 setProcessedStatus(request.changeRequest, ChangeRequestData.ProcessStatus.Failed);
-                publish(_appConfig.changeRequestCheckpointTopic, request.key, request.changeRequest);
-                publish(_appConfig.changeRequestDeadLetterTopic, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.Checkpoint, request.key, request.changeRequest);
+                publish(WorkforceChangeRequestPublishRequest.Topics.DeadLetter, request.key, request.changeRequest);
             }
             catch (Exception ex2) {
                 logger.debug(TAG, ex);
@@ -140,7 +137,7 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
         return response.isSuccess() ? response.data : null;
     }
 
-    protected void publish(String topic, String key, WorkforceChangeRequestData value) {
+    protected void publish(WorkforceChangeRequestPublishRequest.Topics topic, String key, WorkforceChangeRequestData value) {
         _publishService.publish(new WorkforceChangeRequestPublishRequest(topic, key, value));
     }
 
@@ -148,9 +145,6 @@ public class MergeProcessorService extends BaseService implements IMergeProcesso
         SaveStoreWorkforceResponse response = _storeService.save(new SaveStoreWorkforceRequest(workforce));
         return response.isSuccess();
     }
-
-    @Autowired
-    private AppConfig _appConfig;
 
     @Autowired
     private IMergeService _mergeService;
