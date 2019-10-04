@@ -11,8 +11,53 @@ The demo is made up of five projects:
  - Advanced - DSLs that use a KTable and GlobalKTable.
  - Bad Messages - DSL that explores how to handle bad messages.
  - Process - Processor API that implements the same functionality as Advanced, but using a StateStore and GlobalStateStore respectively.   Also includes a ProcessorAPI that instead of using a state store, uses Mongo as the store.
+- CloudStreams - Spring Cloud Streams with Kafka binder that listens to process change requests.
 - Common - Spring/Boot project that has common functionality, including a set of merge services.
 - Mongo - Spring/Boot project that implements service to read and write data to Mongo.
+
+# Diagram
+
+https://textik.com/#e5be2591094473ff
+
+                                                                                                                                          
++------------------------------------------+                 +--------------------------+                                                 
+|     Kafka Streams                        |                 |                          |                                                 
+|                                          |                 | kafka producer web api   |                                                 
+|             +-------------------------+  |                 |                          |                                                 
+|             | dsl & ktable            -\ |                 +-------------|------------+                                                 
+|             +-------------------------+ --\                              |                                                              
+|                                          | --\                           |                                                              
+|             +-------------------------+  |    ---\                       |                                                              
+|             | processor & local store ---\        --\       +------------|------------+                                                 
+|             +-------------------------+  |-------\   --\    |                         |                                                 
+|                                          |        --------\ |                         |                     +--------------------------+
+| +-----------------------+                | ------------------         kafka           -----\                | spring cloud streams     |
+| | processor external    |-----------------/                 |                         |     ----------\     | kafka consumer           |
+| +-----------|-----------+                |                  |                         |                ------                          |
++-------------|----------------------------+                  +-------------------------+                     |                          |
+               \                                                         -/ \-                           /-----                          |
+               |                                                       -/     \-              /----------     +--------------------------+
+                \                                                    -/         \-  /---------                                            
+                |                                                  -/    /----------                                                      
+                |                                             /----------           \                                                     
+                 \                                 /---------- -/                    \-                                                   
+         +--------------+                /---------          -/                        \-                                                 
+         |              |     /----------                  -/                            \-                                               
+         |    mongo     ------        +-------------------/--------------------------------\--------------------+                         
+         |              |  \----      |                -/         kafka consumer             \-                 |                         
+         +--------------+       \---  |    +---------------------+                  +----------\----------+     |                         
+                                    \----  |                     |                  |                     |     |                         
+                                      |  \--                     |                  |                     |     |                         
+                                      |    | merge processor     |                  |  transaction output |     |                         
+                                      |    +---------------------+                  +----------|----------+     |                         
+                                      +--------------------------------------------------------|----------------+                         
+                                                                                               |                                          
+                                                                                               |                                          
+                                                                                    +----------|----------+                               
+                                                                                    |   end client        |                               
+                                                          -                         |                     |                               
+                                                                                    +---------------------+                               
+                                                                                                                               
 
 # Running
 
