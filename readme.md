@@ -1,6 +1,6 @@
-# Kafka Streams Demo
+# Stream Processing Example
 
-This project is to test Kafka Streams usage for the processing of event change on workforce data, and publishing updated workforce data to an external source (in this case Mongo).
+This project is to test Kafka, Kafka Streams, Spring Cloud Stream usage for the processing of event change on workforce data, and publishing updated workforce data to an external source (in this case Mongo).
 
 The demo is made up of five projects:
 
